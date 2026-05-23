@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "town.lampas.overrides.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MerchantOfferMixin"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
