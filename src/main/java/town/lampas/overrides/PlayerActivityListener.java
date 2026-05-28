@@ -49,6 +49,7 @@ public class PlayerActivityListener {
         // UUID is alphanumeric with hyphens, and username is alphanumeric with underscores.
         // Thus, formatting is completely safe and doesn't require complex escaping.
         String json = String.format("{\"uuid\":\"%s\",\"username\":\"%s\",\"event\":\"%s\"}", uuid, username, eventType);
+        LOGGER.info("Payload for player {} event: {}", username, json);
 
         try {
             HttpRequest request = HttpRequest.newBuilder()
