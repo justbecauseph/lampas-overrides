@@ -45,6 +45,7 @@ repositories {
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
+    implementation "maven.modrinth:lightmans-currency:1.21-2.3.0.4f"
 }
 
 tasks.withType(ProcessResources).configureEach {
