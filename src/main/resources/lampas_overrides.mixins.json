@@ -8,7 +8,8 @@
     "BankAccountMixin",
     "BankDataCacheMixin",
     "CoinPlayerMoneyHandlerMixin",
-    "WalletHelpersMixin"
+    "WalletHelpersMixin",
+    "ATMCardMoneyHandlerMixin"
   ],
   "client": [
     "FormattedStringEditorMixin"
