@@ -6,7 +6,9 @@
   "mixins": [
     "MerchantOfferMixin",
     "BankAccountMixin",
-    "BankDataCacheMixin"
+    "BankDataCacheMixin",
+    "CoinPlayerMoneyHandlerMixin",
+    "WalletHelpersMixin"
   ],
   "client": [
     "FormattedStringEditorMixin"
