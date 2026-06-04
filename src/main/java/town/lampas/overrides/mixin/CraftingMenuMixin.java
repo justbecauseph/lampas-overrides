@@ -38,7 +38,7 @@ public class CraftingMenuMixin {
         if (!level.isClientSide) {
             ItemStack result = resultSlots.getItem(0);
             if (result != null && !result.isEmpty()) {
-                if (isOreProcessingFurnace(result)) {
+                if (isBlockedCraft(result, player)) {
                     // Check if player is a normal player (i.e. not OP / permission level < 2)
                     if (player != null && !player.hasPermissions(2)) {
                         resultSlots.setItem(0, ItemStack.EMPTY);
@@ -59,18 +59,30 @@ public class CraftingMenuMixin {
         }
     }
 
-    private static boolean isOreProcessingFurnace(ItemStack stack) {
-        if (stack.is(Items.FURNACE) || stack.is(Items.BLAST_FURNACE)) {
-            return true;
-        }
-        ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        if (id != null) {
-            String path = id.getPath().toLowerCase();
-            // Block anything containing "furnace" but not minecarts
-            if (path.contains("furnace") && !path.contains("minecart")) {
-                return true;
+    private static boolean isBlockedCraft(ItemStack stack, Player player) {
+        if (player == null) return false;
+
+        boolean isFurnace = stack.is(Items.FURNACE) || stack.is(Items.BLAST_FURNACE);
+        if (!isFurnace) {
+            ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+            if (id != null) {
+                String path = id.getPath().toLowerCase();
+                if (path.contains("furnace") && !path.contains("minecart")) {
+                    isFurnace = true;
+                }
             }
         }
+
+        if (isFurnace) {
+            String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
+            return !"LMI".equalsIgnoreCase(role);
+        }
+
+        if (stack.is(Items.BREWING_STAND)) {
+            String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
+            return !"FISHERIES".equalsIgnoreCase(role);
+        }
+
         return false;
     }
 }

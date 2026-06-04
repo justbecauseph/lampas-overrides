@@ -10,6 +10,7 @@ public class ModConfig {
     public static final ModConfigSpec.ConfigValue<String> API_KEY;
 
     public static final ModConfigSpec.ConfigValue<String> BANK_SYNC_URL;
+    public static final ModConfigSpec.ConfigValue<String> PLAYER_API_URL;
 
     static {
         BUILDER.push("General Settings");
@@ -20,7 +21,11 @@ public class ModConfig {
 
         BANK_SYNC_URL = BUILDER.comment("The full URL of the separate endpoint to notify with bank balance and user details when bank deposits/withdrawals occur.")
                 .define("bankSyncUrl", "http://localhost:3000/api/minecraft/bank-sync");
+
+        PLAYER_API_URL = BUILDER.comment("The full URL of the player API endpoint to retrieve player roles.")
+                .define("playerApiUrl", "http://localhost:3000/api/minecraft/player");
         BUILDER.pop();
+
         SPEC = BUILDER.build();
     }
 }
