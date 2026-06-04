@@ -139,6 +139,14 @@ public class PlayerActivityListener {
                     if (!requiredRole.equalsIgnoreCase(role)) {
                         blockInteraction = true;
                     }
+                } else {
+                    ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+                    if (id != null && id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
+                        requiredRole = "NOBILITY";
+                        if (!requiredRole.equalsIgnoreCase(role)) {
+                            blockInteraction = true;
+                        }
+                    }
                 }
                 
                 if (blockInteraction) {
@@ -160,6 +168,9 @@ public class PlayerActivityListener {
         if (id != null) {
             String path = id.getPath().toLowerCase();
             if (path.contains("furnace") && !path.contains("minecart")) {
+                return true;
+            }
+            if (id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
                 return true;
             }
         }
