@@ -139,6 +139,11 @@ public class PlayerActivityListener {
                     if (!requiredRole.equalsIgnoreCase(role)) {
                         blockInteraction = true;
                     }
+                } else if (state.is(Blocks.SMOKER)) {
+                    requiredRole = "FISHERIES";
+                    if (!requiredRole.equalsIgnoreCase(role)) {
+                        blockInteraction = true;
+                    }
                 } else {
                     ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
                     if (id != null && id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
@@ -161,7 +166,7 @@ public class PlayerActivityListener {
     }
 
     private boolean isRestrictedBlock(BlockState state) {
-        if (state.is(Blocks.FURNACE) || state.is(Blocks.BLAST_FURNACE) || state.is(Blocks.BREWING_STAND)) {
+        if (state.is(Blocks.FURNACE) || state.is(Blocks.BLAST_FURNACE) || state.is(Blocks.BREWING_STAND) || state.is(Blocks.SMOKER)) {
             return true;
         }
         ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());

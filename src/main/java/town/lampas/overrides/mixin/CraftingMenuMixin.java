@@ -83,6 +83,11 @@ public class CraftingMenuMixin {
             return !"FISHERIES".equalsIgnoreCase(role);
         }
 
+        if (stack.is(Items.SMOKER)) {
+            String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
+            return !"FISHERIES".equalsIgnoreCase(role);
+        }
+
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         if (id != null && id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
             String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
