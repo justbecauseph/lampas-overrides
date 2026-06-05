@@ -62,6 +62,14 @@ public class CraftingMenuMixin {
     private static boolean isBlockedCraft(ItemStack stack, Player player) {
         if (player == null) return false;
 
+        String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
+
+        if ("MERCHANTS".equalsIgnoreCase(role) || "MERCHANT".equalsIgnoreCase(role)) {
+            if (isCombatItem(stack)) {
+                return true;
+            }
+        }
+
         boolean isFurnace = stack.is(Items.FURNACE) || stack.is(Items.BLAST_FURNACE);
         if (!isFurnace) {
             ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
@@ -74,26 +82,32 @@ public class CraftingMenuMixin {
         }
 
         if (isFurnace) {
-            String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
             return !"LMI".equalsIgnoreCase(role);
         }
 
         if (stack.is(Items.BREWING_STAND)) {
-            String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
             return !"FISHERIES".equalsIgnoreCase(role);
         }
 
         if (stack.is(Items.SMOKER)) {
-            String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
             return !"FISHERIES".equalsIgnoreCase(role);
         }
 
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         if (id != null && id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
-            String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
             return !"NOBILITY".equalsIgnoreCase(role);
         }
 
         return false;
+    }
+
+    private static boolean isCombatItem(ItemStack stack) {
+        net.minecraft.world.item.Item item = stack.getItem();
+        return item instanceof net.minecraft.world.item.SwordItem
+            || item instanceof net.minecraft.world.item.BowItem
+            || item instanceof net.minecraft.world.item.CrossbowItem
+            || item instanceof net.minecraft.world.item.TridentItem
+            || item instanceof net.minecraft.world.item.MaceItem
+            || item == town.lampas.overrides.ModItems.BOOK_OF_ELDRITCH.get();
     }
 }
