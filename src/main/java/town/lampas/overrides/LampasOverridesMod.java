@@ -4,6 +4,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraft.world.item.CreativeModeTabs;
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 
@@ -12,13 +15,26 @@ public class LampasOverridesMod {
     public static final String MODID = "lampas_overrides";
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public LampasOverridesMod(ModContainer modContainer) {
+    public LampasOverridesMod(ModContainer modContainer, IEventBus modEventBus) {
         LOGGER.info("Lampas Trade Overrides (Mixin Edition) initialized!");
         
         // Register the common configuration (saved in config/lampas_overrides-common.toml)
         modContainer.registerConfig(ModConfig.Type.COMMON, town.lampas.overrides.ModConfig.SPEC);
         
+        // Register custom items and effects
+        ModItems.ITEMS.register(modEventBus);
+        ModEffects.MOB_EFFECTS.register(modEventBus);
+
+        // Add creative tab listener
+        modEventBus.addListener(this::addCreativeContents);
+        
         // Register the player activity listener to the global game event bus
         NeoForge.EVENT_BUS.register(new PlayerActivityListener());
+    }
+
+    private void addCreativeContents(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.accept(ModItems.BOOK_OF_ELDRITCH.get());
+        }
     }
 }

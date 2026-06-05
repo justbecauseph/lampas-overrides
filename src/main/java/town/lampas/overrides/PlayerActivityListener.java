@@ -235,4 +235,32 @@ public class PlayerActivityListener {
         }
         return playerApiUrl + "?uuid=" + playerUuid;
     }
+
+    @SubscribeEvent
+    public void onLivingDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            if (!player.level().isClientSide) {
+                if (player.hasEffect(ModEffects.TOTEM_EFFECT)) {
+                    event.setCanceled(true);
+                    player.removeEffect(ModEffects.TOTEM_EFFECT);
+                    
+                    // Clear all potion/mob effects
+                    player.removeAllEffects();
+                    
+                    // Set health to 1.0F (half a heart)
+                    player.setHealth(1.0F);
+                    
+                    // Apply vanilla totem of undying effects: Regeneration II (900 ticks), Absorption II (100 ticks), Fire Resistance I (800 ticks)
+                    player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 900, 1));
+                    player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.ABSORPTION, 100, 1));
+                    player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, 800, 0));
+                    
+                    // Broadcast entity event status 35 (Totem of Undying use animation and sound)
+                    player.level().broadcastEntityEvent(player, (byte) 35);
+                    
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§6Your Eldritch blessing saved you from death!"));
+                }
+            }
+        }
+    }
 }
