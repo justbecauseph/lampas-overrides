@@ -10,4 +10,7 @@ public class ModItems {
 
     public static final DeferredItem<Item> BOOK_OF_ELDRITCH = ITEMS.register("book_of_eldritch",
             () -> new BookOfEldritchItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
+    public static final DeferredItem<Item> ELDRITCH_STONE = ITEMS.register("eldritch_stone",
+            () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
 }

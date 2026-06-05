@@ -36,5 +36,8 @@ public class LampasOverridesMod {
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.BOOK_OF_ELDRITCH.get());
         }
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            event.accept(ModItems.ELDRITCH_STONE.get());
+        }
     }
 }

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "item": "lampas_overrides:eldritch_stone"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "lampas_overrides:book_of_eldritch"
+  }
+}
