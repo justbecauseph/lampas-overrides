@@ -10,7 +10,8 @@
     "CoinPlayerMoneyHandlerMixin",
     "WalletHelpersMixin",
     "ATMCardMoneyHandlerMixin",
-    "CraftingMenuMixin"
+    "CraftingMenuMixin",
+    "TaxEntryMixin"
   ],
   "client": [
     "FormattedStringEditorMixin"

@@ -12,6 +12,8 @@ public class ModConfig {
     public static final ModConfigSpec.ConfigValue<String> BANK_SYNC_URL;
     public static final ModConfigSpec.ConfigValue<String> PLAYER_API_URL;
 
+    public static final ModConfigSpec.ConfigValue<Boolean> TAX_COLLECTOR_FORCE_ACCEPTANCE;
+
     static {
         BUILDER.push("General Settings");
         WEBHOOK_URL = BUILDER.comment("The full URL of the webhook endpoint to notify when player events occur.")
@@ -24,6 +26,9 @@ public class ModConfig {
 
         PLAYER_API_URL = BUILDER.comment("The full URL of the player API endpoint to retrieve player roles.")
                 .define("playerApiUrl", "http://localhost:3000/api/minecraft/player");
+
+        TAX_COLLECTOR_FORCE_ACCEPTANCE = BUILDER.comment("Whether newly created Tax Collectors will default to Force Acceptance being enabled.")
+                .define("taxCollectorForceAcceptance", true);
         BUILDER.pop();
 
         SPEC = BUILDER.build();
