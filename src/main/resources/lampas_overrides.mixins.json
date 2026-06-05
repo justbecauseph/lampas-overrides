@@ -11,7 +11,8 @@
     "WalletHelpersMixin",
     "ATMCardMoneyHandlerMixin",
     "CraftingMenuMixin",
-    "TaxEntryMixin"
+    "TaxEntryMixin",
+    "NeonBlockColorProcedureMixin"
   ],
   "client": [
     "FormattedStringEditorMixin"
