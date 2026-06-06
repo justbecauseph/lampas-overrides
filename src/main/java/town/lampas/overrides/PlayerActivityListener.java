@@ -27,10 +27,10 @@ public class PlayerActivityListener {
             .connectTimeout(Duration.ofSeconds(5))
             .build();
 
-    private static final java.util.Map<java.util.UUID, String> PLAYER_FACTIONS = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Map<java.util.UUID, Faction> PLAYER_FACTIONS = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Map<java.util.UUID, Long> LAST_FETCH_TIME = new java.util.concurrent.ConcurrentHashMap<>();
 
-    public static String getPlayerFaction(java.util.UUID uuid) {
+    public static Faction getPlayerFaction(java.util.UUID uuid) {
         long now = System.currentTimeMillis();
         long lastFetch = LAST_FETCH_TIME.getOrDefault(uuid, 0L);
         // Refresh in background if missing or fetched more than 30 seconds ago
@@ -38,7 +38,7 @@ public class PlayerActivityListener {
             LAST_FETCH_TIME.put(uuid, now);
             fetchPlayerFactionAsync(uuid);
         }
-        return PLAYER_FACTIONS.getOrDefault(uuid, "");
+        return PLAYER_FACTIONS.getOrDefault(uuid, Faction.NONE);
     }
 
     @SubscribeEvent
@@ -116,7 +116,7 @@ public class PlayerActivityListener {
         Player player = event.getEntity();
         if (player != null && !player.hasPermissions(2)) {
             if (isRestrictedBlock(state)) {
-                String role = getPlayerFaction(player.getUUID());
+                Faction role = getPlayerFaction(player.getUUID());
                 
                 boolean isFurnace = state.is(Blocks.FURNACE) || state.is(Blocks.BLAST_FURNACE);
                 if (!isFurnace) {
@@ -130,28 +130,28 @@ public class PlayerActivityListener {
                 }
                 
                 boolean blockInteraction = false;
-                String requiredRole = "";
+                Faction requiredRole = Faction.NONE;
                 
                 if (isFurnace) {
-                    requiredRole = "LMI";
-                    if (!requiredRole.equalsIgnoreCase(role)) {
+                    requiredRole = Faction.LMI;
+                    if (role != requiredRole) {
                         blockInteraction = true;
                     }
                 } else if (state.is(Blocks.BREWING_STAND)) {
-                    requiredRole = "FISHERIES";
-                    if (!requiredRole.equalsIgnoreCase(role)) {
+                    requiredRole = Faction.FISHERIES;
+                    if (role != requiredRole) {
                         blockInteraction = true;
                     }
                 } else if (state.is(Blocks.SMOKER)) {
-                    requiredRole = "FISHERIES";
-                    if (!requiredRole.equalsIgnoreCase(role)) {
+                    requiredRole = Faction.FISHERIES;
+                    if (role != requiredRole) {
                         blockInteraction = true;
                     }
                 } else {
                     ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
                     if (id != null && id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
-                        requiredRole = "NOBILITY";
-                        if (!requiredRole.equalsIgnoreCase(role)) {
+                        requiredRole = Faction.NOBILITY;
+                        if (role != requiredRole) {
                             blockInteraction = true;
                         }
                     }
@@ -161,7 +161,7 @@ public class PlayerActivityListener {
                     event.setCanceled(true);
                     event.setCancellationResult(InteractionResult.FAIL);
                     player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                        "You must have the " + requiredRole + " role to interact with this block!"
+                        "You must have the " + requiredRole.name() + " role to interact with this block!"
                     ).withStyle(ChatFormatting.RED));
                 }
             }
@@ -207,7 +207,8 @@ public class PlayerActivityListener {
                             try {
                                 com.google.gson.JsonObject json = com.google.gson.JsonParser.parseString(response.body()).getAsJsonObject();
                                 if (json.has("faction") && !json.get("faction").isJsonNull()) {
-                                    String faction = json.get("faction").getAsString();
+                                    String factionStr = json.get("faction").getAsString();
+                                    Faction faction = Faction.fromString(factionStr);
                                     net.minecraft.server.MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
                                     if (server != null && server.getPlayerList().getPlayer(uuid) != null) {
                                         PLAYER_FACTIONS.put(uuid, faction);
@@ -218,7 +219,7 @@ public class PlayerActivityListener {
                                 } else {
                                     net.minecraft.server.MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
                                     if (server != null && server.getPlayerList().getPlayer(uuid) != null) {
-                                        PLAYER_FACTIONS.put(uuid, "");
+                                        PLAYER_FACTIONS.put(uuid, Faction.NONE);
                                         LOGGER.info("Player UUID {} has no faction.", uuid);
                                     }
                                 }

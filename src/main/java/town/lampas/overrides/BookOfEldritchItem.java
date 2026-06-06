@@ -27,8 +27,8 @@ public class BookOfEldritchItem extends Item {
         }
 
         // Check faction
-        String faction = PlayerActivityListener.getPlayerFaction(player.getUUID());
-        if (!"RELIGION".equalsIgnoreCase(faction)) {
+        Faction faction = PlayerActivityListener.getPlayerFaction(player.getUUID());
+        if (faction != Faction.RELIGION) {
             player.sendSystemMessage(Component.literal("Only members of the RELIGION faction can use this book.").withStyle(ChatFormatting.RED));
             return InteractionResultHolder.fail(itemstack);
         }

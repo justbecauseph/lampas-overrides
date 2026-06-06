@@ -1,6 +1,7 @@
 package town.lampas.overrides.mixin;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import town.lampas.overrides.Faction;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -62,9 +63,9 @@ public class CraftingMenuMixin {
     private static boolean isBlockedCraft(ItemStack stack, Player player) {
         if (player == null) return false;
 
-        String role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
+        Faction role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
 
-        if ("MERCHANTS".equalsIgnoreCase(role) || "MERCHANT".equalsIgnoreCase(role)) {
+        if (role == Faction.MERCHANTS) {
             if (isCombatItem(stack)) {
                 return true;
             }
@@ -82,20 +83,20 @@ public class CraftingMenuMixin {
         }
 
         if (isFurnace) {
-            return !"LMI".equalsIgnoreCase(role);
+            return role != Faction.LMI;
         }
 
         if (stack.is(Items.BREWING_STAND)) {
-            return !"FISHERIES".equalsIgnoreCase(role);
+            return role != Faction.FISHERIES;
         }
 
         if (stack.is(Items.SMOKER)) {
-            return !"FISHERIES".equalsIgnoreCase(role);
+            return role != Faction.FISHERIES;
         }
 
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         if (id != null && id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
-            return !"NOBILITY".equalsIgnoreCase(role);
+            return role != Faction.NOBILITY;
         }
 
         return false;
