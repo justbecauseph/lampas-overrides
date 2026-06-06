@@ -5,145 +5,133 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.28] - 2026-06-06
+## [v1.0.27] - 2026-06-06
 
-### Changed
-- **Changelog History**: Updated `CHANGELOG.md` with complete and accurate version histories, tag descriptions, and release dates including remote-created tags.
+### Added / Changed
+- Create CHANGELOG.md and configure release workflow to generate pre-releases using it
 
-## [1.0.27] - 2026-06-06
+## [v1.0.26] - 2026-06-06
 
-### Added
-- **Pre-Release Workflow Configuration**: Configured the build release workflow (`build.yml`) to automatically generate pre-releases and consume release notes from `CHANGELOG.md`.
+### Added / Changed
+- Implement fisheries fishing rod restrictions & buffs, remove seed restrictions, and document everything in IMPLEMENTATION.md
 
-## [1.0.26] - 2026-06-06
+## [v1.0.25] - 2026-06-06
 
-### Added
-- **Fisheries Fishing Rod Restrictions**: Only players belonging to the `FISHERIES` faction can now cast and use fishing rods. Non-Fisheries players will have their use actions canceled and receive a system message.
-- **Fisheries Passive Fishing Buffs**: Implemented `FishingHookMixin` to grant `FISHERIES` faction members a passive boost of **+100 lure ticks** (equivalent to **+1 Lure level**) and **+2 luck** (equivalent to **+2 Luck of the Sea**). These buffs stack additively with any enchantments on the fishing rod.
-- **Technical Documentation**: Created [IMPLEMENTATION.md](file:///C:/Users/markj/source/repos/lampas-overrides/IMPLEMENTATION.md) detailing all active faction rules, interaction limitations, caching logic, and underlying mixins.
+### Added / Changed
+- feat: optimize mixins
 
-### Changed
-- **LMI Faction Naming**: Updated the name of the `LMI` faction to **Lampas Marine Institute** in all documentation.
+## [v1.0.24] - 2026-06-06
 
-### Removed
-- **Fisheries Seed Restriction**: Removed the restriction that limited seed planting and usage exclusively to the `FISHERIES` faction (introduced in `v1.0.23`).
+### Added / Changed
+- feat: optimize interaction events
 
-## [1.0.25] - 2026-06-06
+## [v1.0.23] - 2026-06-06
 
-### Changed
-- **Optimizations**: Optimized mixin classes for cleaner mod compatibility.
+### Added / Changed
+- feat: only Fisheries can interact with seeds
 
-## [1.0.24] - 2026-06-06
+## [v1.0.22] - 2026-06-06
 
-### Changed
-- **Optimizations**: Refined and optimized block and seed interaction event handlers in the player listener.
+### Added / Changed
+- feat: declare factions enum
 
-## [1.0.23] - 2026-06-06
+## [v1.0.21] - 2026-06-06
 
-### Added
-- **Fisheries Seed Restriction**: Implemented a seed usage restriction that limited seed planting/usage to the `FISHERIES` faction.
+### Added / Changed
+- feat: refactor
 
-## [1.0.22] - 2026-06-06
+## [v1.0.20] - 2026-06-06
 
-### Added
-- **Factions Enum**: Declared the `Faction` enum class containing faction values (`NAVY`, `TOURISM`, `LMI`, `MERCHANTS`, `RELIGION`, `FISHERIES`, `NOBILITY`, `NONE`).
+### Added / Changed
+- feat: disable crafting of some Combat items
 
-## [1.0.21] - 2026-06-06
+## [v1.0.19] - 2026-06-06
 
-### Changed
-- **Refactoring**: Refactored the core project structure.
+### Added / Changed
+- feat: override neondeco behavior
 
-## [1.0.20] - 2026-06-06
+## [v1.0.18] - 2026-06-06
 
-### Added
-- **Merchant Combat Crafting Restriction**: Restricted members of the `MERCHANTS` faction from crafting combat items (swords, bows, crossbows, tridents, and maces).
+### Added / Changed
+- new sprites, item json and lang changes
 
-## [1.0.19] - 2026-06-06
+## [v1.0.17] - 2026-06-06
 
-### Added
-- **NeonDeco Overrides**: Implemented `NeonBlockColorProcedureMixin` to override color procedures for the `neoncraft` mod.
+### Added / Changed
+- feat: make The Book of Eldritch craftable
 
-## [1.0.18] - 2026-06-06
+## [v1.0.16] - 2026-06-06
 
-### Added
-- New item models, textures/sprites, and language properties.
+### Added / Changed
+- feat: create The Book of Eldritch
 
-## [1.0.17] - 2026-06-06
+## [v1.0.15] - 2026-06-06
 
-### Added
-- **Book of Eldritch Crafting**: Added a shapeless crafting recipe for the Book of Eldritch using 1 `minecraft:book` and 1 `lampas_overrides:eldritch_stone`.
+### Added / Changed
+- feat: restrict Smokers for only Fisheries
 
-## [1.0.16] - 2026-06-06
+## [v1.0.14] - 2026-06-06
 
-### Added
-- **Book of Eldritch**: Added the Book of Eldritch item (`book_of_eldritch`) restricted to `RELIGION` members, which applies a custom Totem of Undying protection effect to players in a 10x10 area.
+### Added / Changed
+- feat: force trading machines and all trades for tax acceptance
 
-## [1.0.15] - 2026-06-06
+## [v1.0.13] - 2026-06-05
 
-### Added
-- **Smoker Restrictions**: Restricted Smoker crafting and interaction to members of the `FISHERIES` faction.
+### Added / Changed
+- Restrict LightmansCurrency Tax Collector crafting and interactions to NOBILITY role
 
-## [1.0.14] - 2026-06-06
+## [v1.0.12] - 2026-06-05
 
-### Added
-- **Forced Tax Acceptance**: Patched `TaxEntry` using `TaxEntryMixin` to force-default `forceAcceptance` to true for newly created Lightman's Currency tax collectors.
+### Added / Changed
+- Restrict furnace and brewing stand crafting and interactions to LMI and FISHERIES roles via player API
 
-## [1.0.13] - 2026-06-05
+## [v1.0.11] - 2026-06-05
 
-### Added
-- **Tax Collector Restrictions**: Restricted Lightman's Currency Tax Collector crafting and interactions to players with the `NOBILITY` faction.
+### Added / Changed
+- feat: player cannot craft furnaces
 
-## [1.0.12] - 2026-06-05
+## [v1.0.10] - 2026-06-04
 
-### Added
-- **Furnace and Brewing Stand Restrictions**: Restricted Furnace and Brewing Stand crafting/interactions to `LMI` and `FISHERIES` factions respectively.
+### Added / Changed
+- feat: update portal balance on widthrawal
 
-## [1.0.11] - 2026-06-05
+## [v1.0.9] - 2026-06-04
 
-### Added
-- Blocked vanilla furnace crafting for non-LMI players.
+### Added / Changed
+- feat: support atm cards in merchants
 
-## [1.0.10] - 2026-06-04
+## [v1.0.8] - 2026-06-04
 
-### Added
-- **Portal Balance Sync**: Updated player portal account balance synchronization on withdrawal events.
+### Added / Changed
+- fix: scholars bug fix on 1.1.16
 
-## [1.0.9] - 2026-06-04
+## [v1.0.7] - 2026-05-30
 
-### Added
-- **ATM Card Support**: Implemented mixin support for ATM cards inside merchant/transaction handlers.
+### Added / Changed
+- feat: implement bank-sync
 
-## [1.0.8] - 2026-06-04
+## [v1.0.6] - 2026-05-29
 
-### Fixed
-- Fixed a text formatting bug in the `scholar` mod's text editor on version 1.1.16.
+### Added / Changed
+- chore: revert logging
 
-## [1.0.7] - 2026-05-30
+## [v1.0.5] - 2026-05-28
 
-### Added
-- **Bank Synchronization**: Integrated bank webhook to sync player bank balance updates and details.
+### Added / Changed
+- feat: Log the payload
 
-## [1.0.6] - 2026-05-29
+## [v1.0.4] - 2026-05-26
 
-### Changed
-- Reverted verbose logger configuration settings.
+### Added / Changed
+- Add configuration and player activity listener for webhook integration
 
-## [1.0.5] - 2026-05-28
+## [v1.0.3] - 2026-05-24
 
-### Added
-- Logging of incoming and outgoing transaction payload data for API calls.
+### Added / Changed
+- Implement MerchantOffer Mixin to robustly override all trades using emeralds
 
-## [1.0.4] - 2026-05-26
+## [v1.0.2] - 2026-05-24
 
-### Added
-- **Webhook Integration**: Added player activity listener for syncing player login/logout events to external webhooks.
-
-## [1.0.3] - 2026-05-24
-
-### Added
-- **Emerald Coin Override**: Implemented `MerchantOfferMixin` to substitute vanilla emeralds with Lightman's Currency emerald coins in all villager trades.
-
-## [1.0.2] - 2026-05-24
-
-### Added
-- GitHub Actions CI/CD workflow configurations (`build.yml`) for building and releasing.
+### Added / Changed
+- Update GitHub Actions workflow to build and publish releases
+- Initial commit: custom trade overrides mod
