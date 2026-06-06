@@ -11,7 +11,7 @@ The factions are defined as enum constants in [Faction.java](file:///C:/Users/ma
 *   **`NAVY`**: No active overrides in the codebase.
 *   **`TOURISM`**: No active overrides in the codebase.
 *   **`LMI`**: Lampas Marine Institute (controls metal smelting and metallurgy).
-*   **`MERCHANTS`**: Controls commerce and trade, restricted from heavy weaponry.
+*   **`MERCHANTS`**: Controls commerce and trade, restricted from heavy weaponry, and has exclusive access to the Large Black Vending Machine.
 *   **`RELIGION`**: Exclusive access to arcane/eldritch artifacts.
 *   **`FISHERIES`**: Controls brewing, smoking, food prep, and fishing (only faction allowed to use fishing rods).
 *   **`NOBILITY`**: Exclusive control over city tax infrastructure.
@@ -74,7 +74,12 @@ Logins and logouts trigger async HTTP POST requests to `ModConfig.WEBHOOK_URL` c
 *   **Combat Crafting Restrictions**:
     *   `MERCHANTS` are explicitly **blocked** from crafting combat items.
     *   **Impacted items**: Any instance of `SwordItem`, `BowItem`, `CrossbowItem`, `TridentItem`, or `MaceItem`.
-*   **Source References**: [CraftingMenuMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/CraftingMenuMixin.java#L68-L72) and [CraftingMenuMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/CraftingMenuMixin.java#L102-L109).
+*   **Large Black Vending Machine Restrictions**:
+    *   Only `MERCHANTS` members can interact with or craft the Large Black Vending Machine (`lightmanscurrency:vending_machine_large_black`).
+*   **Source References**:
+    *   Combat Restrictions: [CraftingMenuMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/CraftingMenuMixin.java#L68-L72) & [CraftingMenuMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/CraftingMenuMixin.java#L107-L114)
+    *   Vending Machine Crafting: [CraftingMenuMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/CraftingMenuMixin.java#L99-L101)
+    *   Vending Machine Interaction: [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java#L162-L167)
 
 ### 3.5 RELIGION
 *   **Arcane Book of Eldritch Access**:

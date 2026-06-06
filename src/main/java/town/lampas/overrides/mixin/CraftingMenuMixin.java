@@ -92,8 +92,13 @@ public class CraftingMenuMixin {
             return role != Faction.FISHERIES;
         }
 
-        if (id != null && id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
-            return role != Faction.NOBILITY;
+        if (id != null && id.getNamespace().equals("lightmanscurrency")) {
+            if (id.getPath().equals("tax_block")) {
+                return role != Faction.NOBILITY;
+            }
+            if (id.getPath().equals("vending_machine_large_black")) {
+                return role != Faction.MERCHANTS;
+            }
         }
 
         return false;

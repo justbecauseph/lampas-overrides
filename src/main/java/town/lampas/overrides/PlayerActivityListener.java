@@ -153,10 +153,17 @@ public class PlayerActivityListener {
                     }
                 } else {
                     ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-                    if (id != null && id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
-                        requiredRole = Faction.NOBILITY;
-                        if (role != requiredRole) {
-                            blockInteraction = true;
+                    if (id != null && id.getNamespace().equals("lightmanscurrency")) {
+                        if (id.getPath().equals("tax_block")) {
+                            requiredRole = Faction.NOBILITY;
+                            if (role != requiredRole) {
+                                blockInteraction = true;
+                            }
+                        } else if (id.getPath().equals("vending_machine_large_black")) {
+                            requiredRole = Faction.MERCHANTS;
+                            if (role != requiredRole) {
+                                blockInteraction = true;
+                            }
                         }
                     }
                 }
@@ -182,8 +189,10 @@ public class PlayerActivityListener {
             if (path.contains("furnace") && !path.contains("minecart")) {
                 return true;
             }
-            if (id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
-                return true;
+            if (id.getNamespace().equals("lightmanscurrency")) {
+                if (id.getPath().equals("tax_block") || id.getPath().equals("vending_machine_large_black")) {
+                    return true;
+                }
             }
         }
         return false;
