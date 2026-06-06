@@ -113,7 +113,7 @@ public class PlayerActivityListener {
         }
 
         Player player = event.getEntity();
-        if (checkAndCancelSeedUse(event, player)) {
+        if (checkAndCancelFishingRodUse(event, player)) {
             return;
         }
 
@@ -280,30 +280,17 @@ public class PlayerActivityListener {
         }
     }
 
-    private boolean isSeed(net.minecraft.world.item.ItemStack stack) {
+    private boolean isFishingRod(net.minecraft.world.item.ItemStack stack) {
         if (stack.isEmpty()) {
             return false;
         }
-        if (stack.is(net.minecraft.tags.ItemTags.VILLAGER_PLANTABLE_SEEDS)) {
-            return true;
-        }
-        if (stack.is(net.neoforged.neoforge.common.Tags.Items.SEEDS)) {
-            return true;
-        }
-        ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        if (id != null) {
-            String path = id.getPath().toLowerCase();
-            if (path.endsWith("_seeds") || path.equals("seeds") || path.equals("seed") || path.equals("pitcher_pod")) {
-                return true;
-            }
-        }
-        return false;
+        return stack.getItem() instanceof net.minecraft.world.item.FishingRodItem;
     }
 
-    private boolean checkAndCancelSeedUse(PlayerInteractEvent event, Player player) {
+    private boolean checkAndCancelFishingRodUse(PlayerInteractEvent event, Player player) {
         if (player != null && !player.hasPermissions(2)) {
             net.minecraft.world.item.ItemStack stack = event.getItemStack();
-            if (isSeed(stack)) {
+            if (isFishingRod(stack)) {
                 Faction role = getPlayerFaction(player.getUUID());
                 if (role != Faction.FISHERIES) {
                     if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) {
@@ -319,7 +306,7 @@ public class PlayerActivityListener {
                         eis.setCancellationResult(InteractionResult.FAIL);
                     }
                     player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                        "You must have the FISHERIES role to use seeds!"
+                        "You must have the FISHERIES role to use fishing rods!"
                     ).withStyle(ChatFormatting.RED));
                     return true;
                 }
@@ -333,7 +320,7 @@ public class PlayerActivityListener {
         if (event.getLevel().isClientSide) {
             return;
         }
-        checkAndCancelSeedUse(event, event.getEntity());
+        checkAndCancelFishingRodUse(event, event.getEntity());
     }
 
     @SubscribeEvent
@@ -341,7 +328,7 @@ public class PlayerActivityListener {
         if (event.getLevel().isClientSide) {
             return;
         }
-        checkAndCancelSeedUse(event, event.getEntity());
+        checkAndCancelFishingRodUse(event, event.getEntity());
     }
 
     @SubscribeEvent
@@ -349,7 +336,7 @@ public class PlayerActivityListener {
         if (event.getLevel().isClientSide) {
             return;
         }
-        checkAndCancelSeedUse(event, event.getEntity());
+        checkAndCancelFishingRodUse(event, event.getEntity());
     }
 }
 

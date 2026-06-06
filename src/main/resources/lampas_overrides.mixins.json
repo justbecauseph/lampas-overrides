@@ -13,7 +13,8 @@
     "ATMCardMoneyHandlerMixin",
     "CraftingMenuMixin",
     "TaxEntryMixin",
-    "NeonBlockColorProcedureMixin"
+    "NeonBlockColorProcedureMixin",
+    "FishingHookMixin"
   ],
   "client": [
     "FormattedStringEditorMixin"
