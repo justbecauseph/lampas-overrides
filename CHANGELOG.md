@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.21] - 2026-06-06
+## [1.0.28] - 2026-06-06
+
+### Changed
+- **Changelog History**: Updated `CHANGELOG.md` with complete and accurate version histories, tag descriptions, and release dates including remote-created tags.
+
+## [1.0.27] - 2026-06-06
+
+### Added
+- **Pre-Release Workflow Configuration**: Configured the build release workflow (`build.yml`) to automatically generate pre-releases and consume release notes from `CHANGELOG.md`.
+
+## [1.0.26] - 2026-06-06
 
 ### Added
 - **Fisheries Fishing Rod Restrictions**: Only players belonging to the `FISHERIES` faction can now cast and use fishing rods. Non-Fisheries players will have their use actions canceled and receive a system message.
@@ -16,7 +26,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **LMI Faction Naming**: Updated the name of the `LMI` faction to **Lampas Marine Institute** in all documentation.
 
 ### Removed
-- **Fisheries Seed Restriction**: Removed the restriction that limited seed planting and usage exclusively to the `FISHERIES` faction.
+- **Fisheries Seed Restriction**: Removed the restriction that limited seed planting and usage exclusively to the `FISHERIES` faction (introduced in `v1.0.23`).
+
+## [1.0.25] - 2026-06-06
+
+### Changed
+- **Optimizations**: Optimized mixin classes for cleaner mod compatibility.
+
+## [1.0.24] - 2026-06-06
+
+### Changed
+- **Optimizations**: Refined and optimized block and seed interaction event handlers in the player listener.
+
+## [1.0.23] - 2026-06-06
+
+### Added
+- **Fisheries Seed Restriction**: Implemented a seed usage restriction that limited seed planting/usage to the `FISHERIES` faction.
+
+## [1.0.22] - 2026-06-06
+
+### Added
+- **Factions Enum**: Declared the `Faction` enum class containing faction values (`NAVY`, `TOURISM`, `LMI`, `MERCHANTS`, `RELIGION`, `FISHERIES`, `NOBILITY`, `NONE`).
+
+## [1.0.21] - 2026-06-06
+
+### Changed
+- **Refactoring**: Refactored the core project structure.
 
 ## [1.0.20] - 2026-06-06
 
