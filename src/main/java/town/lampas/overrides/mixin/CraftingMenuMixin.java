@@ -39,9 +39,9 @@ public class CraftingMenuMixin {
         if (!level.isClientSide) {
             ItemStack result = resultSlots.getItem(0);
             if (result != null && !result.isEmpty()) {
-                if (isBlockedCraft(result, player)) {
-                    // Check if player is a normal player (i.e. not OP / permission level < 2)
-                    if (player != null && !player.hasPermissions(2)) {
+                // Check if player is a normal player (i.e. not OP / permission level < 2)
+                if (player != null && !player.hasPermissions(2)) {
+                    if (isBlockedCraft(result, player)) {
                         resultSlots.setItem(0, ItemStack.EMPTY);
                         menu.setRemoteSlot(0, ItemStack.EMPTY);
                         if (player instanceof ServerPlayer serverPlayer) {
@@ -71,14 +71,12 @@ public class CraftingMenuMixin {
             }
         }
 
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         boolean isFurnace = stack.is(Items.FURNACE) || stack.is(Items.BLAST_FURNACE);
-        if (!isFurnace) {
-            ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-            if (id != null) {
-                String path = id.getPath().toLowerCase();
-                if (path.contains("furnace") && !path.contains("minecart")) {
-                    isFurnace = true;
-                }
+        if (!isFurnace && id != null) {
+            String path = id.getPath().toLowerCase();
+            if (path.contains("furnace") && !path.contains("minecart")) {
+                isFurnace = true;
             }
         }
 
@@ -94,7 +92,6 @@ public class CraftingMenuMixin {
             return role != Faction.FISHERIES;
         }
 
-        ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         if (id != null && id.getNamespace().equals("lightmanscurrency") && id.getPath().equals("tax_block")) {
             return role != Faction.NOBILITY;
         }
@@ -108,7 +105,6 @@ public class CraftingMenuMixin {
             || item instanceof net.minecraft.world.item.BowItem
             || item instanceof net.minecraft.world.item.CrossbowItem
             || item instanceof net.minecraft.world.item.TridentItem
-            || item instanceof net.minecraft.world.item.MaceItem
-            || item == town.lampas.overrides.ModItems.BOOK_OF_ELDRITCH.get();
+            || item instanceof net.minecraft.world.item.MaceItem;
     }
 }
