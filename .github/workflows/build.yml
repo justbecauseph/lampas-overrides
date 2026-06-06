@@ -57,6 +57,7 @@ jobs:
           gh release create "$VERSION" \
             "lampas-overrides-$VERSION.jar" \
             "lampas-overrides.jar" \
-            --title "Release $VERSION" \
-            --notes "Release of version $VERSION" \
-            --generate-notes
+            --title "Pre-release $VERSION" \
+            --notes-file CHANGELOG.md \
+            --prerelease
+
