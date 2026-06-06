@@ -25,3 +25,10 @@ config = "lampas_overrides.mixins.json"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="lightmanscurrency"
+    mandatory=true
+    versionRange="[1.21-2.3.0.4f,)"
+    ordering="NONE"
+    side="BOTH"
+

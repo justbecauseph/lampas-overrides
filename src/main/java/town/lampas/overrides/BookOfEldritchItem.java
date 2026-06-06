@@ -1,6 +1,7 @@
 package town.lampas.overrides;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -28,7 +29,7 @@ public class BookOfEldritchItem extends Item {
         // Check faction
         String faction = PlayerActivityListener.getPlayerFaction(player.getUUID());
         if (!"RELIGION".equalsIgnoreCase(faction)) {
-            player.sendSystemMessage(Component.literal("§cOnly members of the RELIGION faction can use this book."));
+            player.sendSystemMessage(Component.literal("Only members of the RELIGION faction can use this book.").withStyle(ChatFormatting.RED));
             return InteractionResultHolder.fail(itemstack);
         }
 
@@ -43,7 +44,7 @@ public class BookOfEldritchItem extends Item {
 
         for (Player target : nearbyPlayers) {
             target.addEffect(new MobEffectInstance(effectInstance));
-            target.sendSystemMessage(Component.literal("§dThe Book of Eldritch has blessed you with the Totem of Undying protection for 1 hour."));
+            target.sendSystemMessage(Component.literal("The Book of Eldritch has blessed you with the Totem of Undying protection for 1 hour.").withStyle(ChatFormatting.LIGHT_PURPLE));
         }
 
         // Consume the item

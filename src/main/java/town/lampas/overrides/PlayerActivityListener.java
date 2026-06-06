@@ -3,6 +3,7 @@ package town.lampas.overrides;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.ChatFormatting;
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 import java.util.List;
@@ -72,10 +73,12 @@ public class PlayerActivityListener {
             return;
         }
 
-        // Create the JSON payload manually to keep the mod zero-dependency.
-        // UUID is alphanumeric with hyphens, and username is alphanumeric with underscores.
-        // Thus, formatting is completely safe and doesn't require complex escaping.
-        String json = String.format("{\"uuid\":\"%s\",\"username\":\"%s\",\"event\":\"%s\"}", uuid, username, eventType);
+        com.google.gson.JsonObject jsonObject = new com.google.gson.JsonObject();
+        jsonObject.addProperty("uuid", uuid);
+        jsonObject.addProperty("username", username);
+        jsonObject.addProperty("event", eventType);
+
+        String json = jsonObject.toString();
 
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -158,8 +161,8 @@ public class PlayerActivityListener {
                     event.setCanceled(true);
                     event.setCancellationResult(InteractionResult.FAIL);
                     player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                        "§cYou must have the " + requiredRole + " role to interact with this block!"
-                    ));
+                        "You must have the " + requiredRole + " role to interact with this block!"
+                    ).withStyle(ChatFormatting.RED));
                 }
             }
         }
@@ -205,11 +208,19 @@ public class PlayerActivityListener {
                                 com.google.gson.JsonObject json = com.google.gson.JsonParser.parseString(response.body()).getAsJsonObject();
                                 if (json.has("faction") && !json.get("faction").isJsonNull()) {
                                     String faction = json.get("faction").getAsString();
-                                    PLAYER_FACTIONS.put(uuid, faction);
-                                    LOGGER.info("Fetched faction for player UUID {}: {}", uuid, faction);
+                                    net.minecraft.server.MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+                                    if (server != null && server.getPlayerList().getPlayer(uuid) != null) {
+                                        PLAYER_FACTIONS.put(uuid, faction);
+                                        LOGGER.info("Fetched faction for player UUID {}: {}", uuid, faction);
+                                    } else {
+                                        LOGGER.info("Discarded fetched faction for player UUID {} because they are no longer online.", uuid);
+                                    }
                                 } else {
-                                    PLAYER_FACTIONS.put(uuid, "");
-                                    LOGGER.info("Player UUID {} has no faction.", uuid);
+                                    net.minecraft.server.MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+                                    if (server != null && server.getPlayerList().getPlayer(uuid) != null) {
+                                        PLAYER_FACTIONS.put(uuid, "");
+                                        LOGGER.info("Player UUID {} has no faction.", uuid);
+                                    }
                                 }
                             } catch (Exception ex) {
                                 LOGGER.error("Failed to parse player API response: {}", ex.getMessage(), ex);
@@ -258,7 +269,7 @@ public class PlayerActivityListener {
                     // Broadcast entity event status 35 (Totem of Undying use animation and sound)
                     player.level().broadcastEntityEvent(player, (byte) 35);
                     
-                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("§6Your Eldritch blessing saved you from death!"));
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Your Eldritch blessing saved you from death!").withStyle(ChatFormatting.GOLD));
                 }
             }
         }

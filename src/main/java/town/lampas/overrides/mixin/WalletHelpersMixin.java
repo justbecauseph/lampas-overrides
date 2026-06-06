@@ -1,9 +1,6 @@
 package town.lampas.overrides.mixin;
 
 import io.github.lightman314.lightmanscurrency.common.attachments.wallet.WalletHelpers;
-import io.github.lightman314.lightmanscurrency.common.attachments.WalletHandler;
-import io.github.lightman314.lightmanscurrency.common.core.ModAttachmentTypes;
-import io.github.lightman314.lightmanscurrency.common.items.WalletItem;
 import io.github.lightman314.lightmanscurrency.api.money.value.MoneyView;
 import io.github.lightman314.lightmanscurrency.api.capability.money.IMoneyHandler;
 import io.github.lightman314.lightmanscurrency.api.capability.money.CapabilityMoneyHandler;
@@ -11,25 +8,20 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 
 @Mixin(value = WalletHelpers.class, remap = false)
 public class WalletHelpersMixin {
 
-    /**
-     * @author markj
-     * @reason Support ATM cards in player inventory for wallet money queries (e.g. trading).
-     */
-    @Overwrite
-    @Nonnull
-    public static MoneyView getWalletMoney(@Nonnull final LivingEntity entity) {
-        WalletHandler walletHandler = entity.getData(ModAttachmentTypes.WALLET_HANDLER);
-        ItemStack wallet = walletHandler.getWallet();
-        MoneyView.Builder builder = MoneyView.builder();
-        builder.merge(WalletItem.getDataWrapper(wallet).getStoredMoney());
+    @Inject(method = "getWalletMoney", at = @At("RETURN"), cancellable = true)
+    private static void onGetWalletMoney(@Nonnull final LivingEntity entity, CallbackInfoReturnable<MoneyView> cir) {
         if (entity instanceof Player player) {
+            MoneyView original = cir.getReturnValue();
+            MoneyView.Builder builder = MoneyView.builder().merge(original);
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 ItemStack stack = player.getInventory().getItem(i);
                 if (!stack.isEmpty()) {
@@ -39,7 +31,7 @@ public class WalletHelpersMixin {
                     }
                 }
             }
+            cir.setReturnValue(builder.build());
         }
-        return builder.build();
     }
 }
