@@ -112,22 +112,13 @@ public class PlayerActivityListener {
             return;
         }
 
-        BlockState state = event.getLevel().getBlockState(event.getPos());
         Player player = event.getEntity();
-        if (player != null && !player.hasPermissions(2)) {
-            net.minecraft.world.item.ItemStack stack = event.getItemStack();
-            if (isSeed(stack)) {
-                Faction role = getPlayerFaction(player.getUUID());
-                if (role != Faction.FISHERIES) {
-                    event.setCanceled(true);
-                    event.setCancellationResult(InteractionResult.FAIL);
-                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                        "You must have the FISHERIES role to use seeds!"
-                    ).withStyle(ChatFormatting.RED));
-                    return;
-                }
-            }
+        if (checkAndCancelSeedUse(event, player)) {
+            return;
+        }
 
+        BlockState state = event.getLevel().getBlockState(event.getPos());
+        if (player != null && !player.hasPermissions(2)) {
             if (isRestrictedBlock(state)) {
                 Faction role = getPlayerFaction(player.getUUID());
                 
@@ -293,19 +284,46 @@ public class PlayerActivityListener {
         if (stack.isEmpty()) {
             return false;
         }
-        ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        if (id == null) {
-            return false;
-        }
-        String path = id.getPath().toLowerCase();
-        if (path.endsWith("_seeds") || path.equals("seeds") || path.equals("seed") || path.equals("pitcher_pod")) {
-            return true;
-        }
         if (stack.is(net.minecraft.tags.ItemTags.VILLAGER_PLANTABLE_SEEDS)) {
             return true;
         }
         if (stack.is(net.neoforged.neoforge.common.Tags.Items.SEEDS)) {
             return true;
+        }
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        if (id != null) {
+            String path = id.getPath().toLowerCase();
+            if (path.endsWith("_seeds") || path.equals("seeds") || path.equals("seed") || path.equals("pitcher_pod")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkAndCancelSeedUse(PlayerInteractEvent event, Player player) {
+        if (player != null && !player.hasPermissions(2)) {
+            net.minecraft.world.item.ItemStack stack = event.getItemStack();
+            if (isSeed(stack)) {
+                Faction role = getPlayerFaction(player.getUUID());
+                if (role != Faction.FISHERIES) {
+                    if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) {
+                        cancellable.setCanceled(true);
+                    }
+                    if (event instanceof PlayerInteractEvent.RightClickBlock rcb) {
+                        rcb.setCancellationResult(InteractionResult.FAIL);
+                    } else if (event instanceof PlayerInteractEvent.RightClickItem rci) {
+                        rci.setCancellationResult(InteractionResult.FAIL);
+                    } else if (event instanceof PlayerInteractEvent.EntityInteract ei) {
+                        ei.setCancellationResult(InteractionResult.FAIL);
+                    } else if (event instanceof PlayerInteractEvent.EntityInteractSpecific eis) {
+                        eis.setCancellationResult(InteractionResult.FAIL);
+                    }
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                        "You must have the FISHERIES role to use seeds!"
+                    ).withStyle(ChatFormatting.RED));
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -315,20 +333,7 @@ public class PlayerActivityListener {
         if (event.getLevel().isClientSide) {
             return;
         }
-        Player player = event.getEntity();
-        if (player != null && !player.hasPermissions(2)) {
-            net.minecraft.world.item.ItemStack stack = event.getItemStack();
-            if (isSeed(stack)) {
-                Faction role = getPlayerFaction(player.getUUID());
-                if (role != Faction.FISHERIES) {
-                    event.setCanceled(true);
-                    event.setCancellationResult(InteractionResult.FAIL);
-                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                        "You must have the FISHERIES role to use seeds!"
-                    ).withStyle(ChatFormatting.RED));
-                }
-            }
-        }
+        checkAndCancelSeedUse(event, event.getEntity());
     }
 
     @SubscribeEvent
@@ -336,20 +341,7 @@ public class PlayerActivityListener {
         if (event.getLevel().isClientSide) {
             return;
         }
-        Player player = event.getEntity();
-        if (player != null && !player.hasPermissions(2)) {
-            net.minecraft.world.item.ItemStack stack = event.getItemStack();
-            if (isSeed(stack)) {
-                Faction role = getPlayerFaction(player.getUUID());
-                if (role != Faction.FISHERIES) {
-                    event.setCanceled(true);
-                    event.setCancellationResult(InteractionResult.FAIL);
-                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                        "You must have the FISHERIES role to use seeds!"
-                    ).withStyle(ChatFormatting.RED));
-                }
-            }
-        }
+        checkAndCancelSeedUse(event, event.getEntity());
     }
 
     @SubscribeEvent
@@ -357,20 +349,7 @@ public class PlayerActivityListener {
         if (event.getLevel().isClientSide) {
             return;
         }
-        Player player = event.getEntity();
-        if (player != null && !player.hasPermissions(2)) {
-            net.minecraft.world.item.ItemStack stack = event.getItemStack();
-            if (isSeed(stack)) {
-                Faction role = getPlayerFaction(player.getUUID());
-                if (role != Faction.FISHERIES) {
-                    event.setCanceled(true);
-                    event.setCancellationResult(InteractionResult.FAIL);
-                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                        "You must have the FISHERIES role to use seeds!"
-                    ).withStyle(ChatFormatting.RED));
-                }
-            }
-        }
+        checkAndCancelSeedUse(event, event.getEntity());
     }
 }
 
