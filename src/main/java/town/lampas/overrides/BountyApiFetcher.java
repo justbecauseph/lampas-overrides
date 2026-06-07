@@ -19,7 +19,7 @@ import com.mojang.logging.LogUtils;
 public class BountyApiFetcher {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public record Bounty(UUID id, String title, String description, String prizeType, int prizeAmount, String prizeItem, String prizeOther, java.util.Set<String> claims) {
+    public record Bounty(UUID id, String title, String description, String prizeType, int prizeAmount, String prizeItem, String prizeOther, String poster, java.util.Set<String> claims) {
         public boolean isClaimedBy(UUID playerUuid) {
             String playerUuidStr = playerUuid.toString().toLowerCase().replace("-", "");
             return claims.contains(playerUuidStr);
@@ -129,7 +129,12 @@ public class BountyApiFetcher {
                                         }
                                     }
 
-                                    tempBounties.add(new Bounty(bountyId, title, description, prizeType, prizeAmount, prizeItem, prizeOther, claimsSet));
+                                    String poster = "Unknown";
+                                    if (obj.has("poster") && !obj.get("poster").isJsonNull()) {
+                                        poster = obj.get("poster").getAsString();
+                                    }
+
+                                    tempBounties.add(new Bounty(bountyId, title, description, prizeType, prizeAmount, prizeItem, prizeOther, poster, claimsSet));
                                 }
                                 cachedBounties = java.util.Collections.unmodifiableList(tempBounties);
                             } catch (Exception e) {

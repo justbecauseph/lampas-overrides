@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added / Changed
+- feat: optimize virtual book layout by removing Title and Objective labels, underlining title, and italicizing objective
+
+## [v1.0.39] - 2026-06-08
+
+### Added / Changed
 - fix: adjust virtual written book page layout and character budgeting to prevent text overflowing page limits
 
 ## [v1.0.38] - 2026-06-08
