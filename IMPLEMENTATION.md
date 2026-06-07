@@ -123,7 +123,7 @@ The Java class [BountyApiFetcher.java](file:///C:/Users/markj/source/repos/lampa
 *   **Async Dispatch**: Dispatches HTTP GET and POST requests using Java 21's asynchronous `HttpClient.sendAsync`.
 
 ### 4.3 Virtual Written Book UI
-When a player right-clicks a Bounty Board block (`lets-do-wildernature:bounty_board`), the default screen UI is bypassed. Instead, [BountyBoardBlockMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/BountyBoardBlockMixin.java) intercepts the block use event and constructs a temporary graphical book screen:
+When a player right-clicks a Bounty Board block (`lets-do-wildernature:bounty_board`), the default screen UI is bypassed. Instead, the right-click block interaction event handler in [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java) intercepts the event on both client and server sides, cancels the default action, and opens a temporary graphical book screen:
 *   **Book Assembly**: Generates a virtual `Items.WRITTEN_BOOK` with pages formatted dynamically:
     *   *Welcome Page*: Explains how to navigate and accept active contracts.
     *   *Bounty Pages*: Creates a page for each active bounty containing details (Title, Objective, Reward).
