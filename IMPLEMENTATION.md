@@ -119,7 +119,7 @@ The web application hosts REST endpoints at `/api/minecraft/bounties` (defined i
 ### 4.2 Decoupled API Fetcher
 The Java class [BountyApiFetcher.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/BountyApiFetcher.java) communicates asynchronously with the web portal API.
 *   **Configurable Endpoint**: Fetches the target API server endpoint directly from the `bountiesApiUrl` configuration setting (`ModConfig.BOUNTIES_API_URL`) inside `General Settings`.
-*   **Bounty POJO**: Declares a lightweight, independent `Bounty` record containing the fields retrieved from the API, resolving any direct binary dependencies on WilderNature class files.
+*   **Bounty POJO**: Declares a lightweight, independent `Bounty` record containing the fields retrieved from the API, resolving any direct binary dependencies on WilderNature class files. It supports non-monetary rewards (e.g., `ITEM` and `OTHER` prize types) by storing `prizeItem` and `prizeOther` fields and exposing them directly as plain text via a formatting helper.
 *   **Caching & TTL**: Implements a memory cache (`cachedBounties`) that expires every 15 seconds. Requests made within the 15-second TTL window receive the cached list immediately, avoiding API rate limits.
 *   **Async Dispatch**: Dispatches HTTP GET and POST requests using Java 21's asynchronous `HttpClient.sendAsync`.
 

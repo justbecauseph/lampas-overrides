@@ -19,10 +19,20 @@ import com.mojang.logging.LogUtils;
 public class BountyApiFetcher {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public record Bounty(UUID id, String title, String description, String prizeType, int prizeAmount, java.util.Set<String> claims) {
+    public record Bounty(UUID id, String title, String description, String prizeType, int prizeAmount, String prizeItem, String prizeOther, java.util.Set<String> claims) {
         public boolean isClaimedBy(UUID playerUuid) {
             String playerUuidStr = playerUuid.toString().toLowerCase().replace("-", "");
             return claims.contains(playerUuidStr);
+        }
+
+        public String getRewardText() {
+            if ("ITEM".equalsIgnoreCase(prizeType)) {
+                return prizeItem != null ? prizeItem : "Unknown Item";
+            } else if ("OTHER".equalsIgnoreCase(prizeType)) {
+                return prizeOther != null ? prizeOther : "Unknown Reward";
+            } else {
+                return prizeAmount + " " + prizeType;
+            }
         }
     }
 
@@ -97,6 +107,16 @@ public class BountyApiFetcher {
                                         prizeAmount = obj.get("prizeAmount").getAsInt();
                                     }
 
+                                    String prizeItem = null;
+                                    if (obj.has("prizeItem") && !obj.get("prizeItem").isJsonNull()) {
+                                        prizeItem = obj.get("prizeItem").getAsString();
+                                    }
+
+                                    String prizeOther = null;
+                                    if (obj.has("prizeOther") && !obj.get("prizeOther").isJsonNull()) {
+                                        prizeOther = obj.get("prizeOther").getAsString();
+                                    }
+
                                     java.util.Set<String> claimsSet = new java.util.HashSet<>();
                                     if (obj.has("claims") && obj.get("claims").isJsonArray()) {
                                         JsonArray claimsArr = obj.get("claims").getAsJsonArray();
@@ -107,7 +127,7 @@ public class BountyApiFetcher {
                                         }
                                     }
 
-                                    tempBounties.add(new Bounty(bountyId, title, description, prizeType, prizeAmount, claimsSet));
+                                    tempBounties.add(new Bounty(bountyId, title, description, prizeType, prizeAmount, prizeItem, prizeOther, claimsSet));
                                 }
                                 cachedBounties = java.util.Collections.unmodifiableList(tempBounties);
                             } catch (Exception e) {

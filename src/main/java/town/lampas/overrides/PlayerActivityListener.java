@@ -409,7 +409,7 @@ public class PlayerActivityListener {
                             for (String line : wrappedDesc) {
                                 lore.add(net.minecraft.network.chat.Component.literal(line).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
                             }
-                            lore.add(net.minecraft.network.chat.Component.literal("Reward: " + finalTarget.prizeAmount() + " " + finalTarget.prizeType()).withStyle(ChatFormatting.DARK_GREEN));
+                            lore.add(net.minecraft.network.chat.Component.literal("Reward: " + finalTarget.getRewardText()).withStyle(ChatFormatting.DARK_GREEN));
                             contract.set(net.minecraft.core.component.DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(lore));
                             
                             if (!player.getInventory().add(contract)) {
@@ -447,7 +447,7 @@ public class PlayerActivityListener {
             int maxLineWidth = 25;
 
             // Compute reward lines wrapped dynamically
-            String rewardText = bounty.prizeAmount() + " " + bounty.prizeType();
+            String rewardText = bounty.getRewardText();
             java.util.List<String> rewardLinesWrapped = wrapTextWithOffset(rewardText, maxLineWidth, 8); // "Reward: " is 8 chars
             int rewardLines = Math.max(1, rewardLinesWrapped.size());
 
