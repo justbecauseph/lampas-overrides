@@ -129,6 +129,7 @@ When a player right-clicks a Bounty Board block (`lets-do-wildernature:bounty_bo
     *   *Welcome Page*: Explains how to navigate and accept active contracts.
     *   *Bounty Pages*: Creates a page for each active bounty containing details (Title, Objective, Reward).
     *   *Interaction ClickEvent*: Appends a clickable element running the command `/claimbounty <bountyId>`. If a bounty is already claimed by the player, it displays `[ ALREADY CLAIMED ]` instead.
+    *   *Line-Wrapping & Page Budget Validation*: Implements server-side word-wrapping (at 25 characters/line) and page height limits (maximum of 15 lines). This ensures that verbose bounty details never push the `[ ACCEPT CONTRACT ]` claim link off the page. The system dynamically allocates the remaining line budget to the title (max 2 lines) and objective description, truncating the text with an ellipsis (`...`) if they exceed their budget. Bold styling is omitted to maximize horizontal text space.
 *   **Hand Swapping Trick**: To trigger the native Minecraft book reading overlay without permanently placing a written book in the player's inventory:
     1.  Temporarily replaces the player's main-hand item with the virtual book.
     2.  Sends a `ClientboundContainerSetSlotPacket` to force the client to recognize the book.
@@ -141,6 +142,7 @@ The `/claimbounty <id>` command is registered during the command registration ev
 *   **Proximity Validation**: Before dispatching a claim query, the command verifies that the executing player is within an 8-block horizontal range and a 4-block vertical range of a valid `BountyBoardBlock`.
 *   **API Execution**: Executes `BountyApiFetcher.claimBountyAsync` to claim the bounty.
 *   **Reward/Contract Delivery**: On successful API acknowledgment:
-    *   Fashions a custom `Items.PAPER` item with the bounty's title (colored gold/bold) and the description and reward detailed in the item's lore components.
+    *   Fashions a custom `Items.PAPER` item with the bounty's title (colored gold) and the description and reward detailed in the item's lore components.
+    *   Applies a 35-character word-wrap to the description in the contract paper's lore so the tooltip breaks into readable lines without stretching off-screen, while keeping the full text unabridged (no truncation).
     *   Attempts to add the contract to the player's inventory, dropping it at their feet if full.
     *   Plays the `UI_TOAST_CHALLENGE_COMPLETE` sound to confirm success.

@@ -10,17 +10,12 @@ import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.UUID;
 
 public class BankSyncHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(5))
-            .build();
 
     public static void handleBankBalanceChange(UUID playerUUID, BankAccount bankAccount, MoneyValue amount, String eventType) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
@@ -78,7 +73,7 @@ public class BankSyncHandler {
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
 
-            HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            HttpUtil.HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> {
                         if (response.statusCode() >= 200 && response.statusCode() < 300) {
                             LOGGER.info("Successfully synced player {} bank event: {}", username, eventType);

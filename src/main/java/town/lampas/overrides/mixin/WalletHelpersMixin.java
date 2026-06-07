@@ -20,18 +20,26 @@ public class WalletHelpersMixin {
     @Inject(method = "getWalletMoney", at = @At("RETURN"), cancellable = true)
     private static void onGetWalletMoney(@Nonnull final LivingEntity entity, CallbackInfoReturnable<MoneyView> cir) {
         if (entity instanceof Player player) {
-            MoneyView original = cir.getReturnValue();
-            MoneyView.Builder builder = MoneyView.builder().merge(original);
-            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                ItemStack stack = player.getInventory().getItem(i);
-                if (!stack.isEmpty()) {
-                    IMoneyHandler itemHandler = stack.getCapability(CapabilityMoneyHandler.MONEY_HANDLER_ITEM);
-                    if (itemHandler != null) {
-                        builder.merge(itemHandler.getStoredMoney());
+            if (town.lampas.overrides.PlayerActivityListener.IS_MERGING_INVENTORY.get()) {
+                return;
+            }
+            try {
+                town.lampas.overrides.PlayerActivityListener.IS_MERGING_INVENTORY.set(true);
+                MoneyView original = cir.getReturnValue();
+                MoneyView.Builder builder = MoneyView.builder().merge(original);
+                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                    ItemStack stack = player.getInventory().getItem(i);
+                    if (!stack.isEmpty()) {
+                        IMoneyHandler itemHandler = stack.getCapability(CapabilityMoneyHandler.MONEY_HANDLER_ITEM);
+                        if (itemHandler != null) {
+                            builder.merge(itemHandler.getStoredMoney());
+                        }
                     }
                 }
+                cir.setReturnValue(builder.build());
+            } finally {
+                town.lampas.overrides.PlayerActivityListener.IS_MERGING_INVENTORY.set(false);
             }
-            cir.setReturnValue(builder.build());
         }
     }
 }

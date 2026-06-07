@@ -35,16 +35,24 @@ public abstract class CoinPlayerMoneyHandlerMixin {
 
     @Inject(method = "collectStoredMoney", at = @At("TAIL"))
     private void onCollectStoredMoney(MoneyView.Builder builder, CallbackInfo ci) {
-        if (this.walletHandler != null && this.walletHandler.entity() instanceof Player player) {
-            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                ItemStack stack = player.getInventory().getItem(i);
-                if (!stack.isEmpty()) {
-                    IMoneyHandler itemHandler = stack.getCapability(CapabilityMoneyHandler.MONEY_HANDLER_ITEM);
-                    if (itemHandler != null) {
-                        builder.merge(itemHandler.getStoredMoney());
+        if (town.lampas.overrides.PlayerActivityListener.IS_MERGING_INVENTORY.get()) {
+            return;
+        }
+        try {
+            town.lampas.overrides.PlayerActivityListener.IS_MERGING_INVENTORY.set(true);
+            if (this.walletHandler != null && this.walletHandler.entity() instanceof Player player) {
+                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                    ItemStack stack = player.getInventory().getItem(i);
+                    if (!stack.isEmpty()) {
+                        IMoneyHandler itemHandler = stack.getCapability(CapabilityMoneyHandler.MONEY_HANDLER_ITEM);
+                        if (itemHandler != null) {
+                            builder.merge(itemHandler.getStoredMoney());
+                        }
                     }
                 }
             }
+        } finally {
+            town.lampas.overrides.PlayerActivityListener.IS_MERGING_INVENTORY.set(false);
         }
     }
 

@@ -7,37 +7,27 @@ import com.google.gson.JsonParser;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 
 public class BountyApiFetcher {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(5))
-            .build();
 
-    public record Bounty(UUID id, String title, String description, String prizeType, int prizeAmount, List<String> claims) {
+    public record Bounty(UUID id, String title, String description, String prizeType, int prizeAmount, java.util.Set<String> claims) {
         public boolean isClaimedBy(UUID playerUuid) {
             String playerUuidStr = playerUuid.toString().toLowerCase().replace("-", "");
-            for (String c : claims) {
-                if (c.toLowerCase().replace("-", "").equals(playerUuidStr)) {
-                    return true;
-                }
-            }
-            return false;
+            return claims.contains(playerUuidStr);
         }
     }
 
-    private static final List<Bounty> cachedBounties = new CopyOnWriteArrayList<>();
-    private static long lastFetchTime = 0;
+    private static volatile List<Bounty> cachedBounties = java.util.Collections.emptyList();
+    private static volatile long lastFetchTime = 0;
 
     public static String getBountiesUrl() {
         return ModConfig.BOUNTIES_API_URL.get();
@@ -53,7 +43,7 @@ public class BountyApiFetcher {
             lastFetchTime = now;
             fetchBountiesAsync(null);
         }
-        return new ArrayList<>(cachedBounties);
+        return cachedBounties;
     }
 
     public static void getBountiesAsync(BountiesReceiver receiver) {
@@ -63,7 +53,7 @@ public class BountyApiFetcher {
             fetchBountiesAsync(receiver);
         } else {
             if (receiver != null) {
-                receiver.accept(new ArrayList<>(cachedBounties));
+                receiver.accept(cachedBounties);
             }
         }
     }
@@ -89,7 +79,7 @@ public class BountyApiFetcher {
                     .GET()
                     .build();
 
-            HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            HttpUtil.HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> {
                         List<Bounty> tempBounties = new ArrayList<>();
                         if (response.statusCode() == 200) {
@@ -107,39 +97,38 @@ public class BountyApiFetcher {
                                         prizeAmount = obj.get("prizeAmount").getAsInt();
                                     }
 
-                                    List<String> claimsList = new ArrayList<>();
+                                    java.util.Set<String> claimsSet = new java.util.HashSet<>();
                                     if (obj.has("claims") && obj.get("claims").isJsonArray()) {
                                         JsonArray claimsArr = obj.get("claims").getAsJsonArray();
                                         for (JsonElement c : claimsArr) {
                                             if (!c.isJsonNull()) {
-                                                claimsList.add(c.getAsString());
+                                                claimsSet.add(c.getAsString().toLowerCase().replace("-", ""));
                                             }
                                         }
                                     }
 
-                                    tempBounties.add(new Bounty(bountyId, title, description, prizeType, prizeAmount, claimsList));
+                                    tempBounties.add(new Bounty(bountyId, title, description, prizeType, prizeAmount, claimsSet));
                                 }
-                                cachedBounties.clear();
-                                cachedBounties.addAll(tempBounties);
+                                cachedBounties = java.util.Collections.unmodifiableList(tempBounties);
                             } catch (Exception e) {
                                 LOGGER.error("Failed to parse bounties response: {}", e.getMessage(), e);
                             }
                         }
                         if (receiver != null) {
-                            receiver.accept(new ArrayList<>(cachedBounties));
+                            receiver.accept(cachedBounties);
                         }
                     })
                     .exceptionally(ex -> {
                         LOGGER.warn("Failed to fetch bounties from API endpoint {}: {}", url, ex.getMessage());
                         if (receiver != null) {
-                            receiver.accept(new ArrayList<>(cachedBounties));
+                            receiver.accept(cachedBounties);
                         }
                         return null;
                     });
         } catch (Exception e) {
             LOGGER.error("Failed to build or send bounties request: {}", e.getMessage(), e);
             if (receiver != null) {
-                receiver.accept(new ArrayList<>(cachedBounties));
+                receiver.accept(cachedBounties);
             }
         }
     }
@@ -165,7 +154,7 @@ public class BountyApiFetcher {
                     .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
                     .build();
 
-            HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            HttpUtil.HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(response -> {
                         if (response.statusCode() == 200) {
                             player.server.execute(() -> {

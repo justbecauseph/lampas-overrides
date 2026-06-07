@@ -63,42 +63,37 @@ public class CraftingMenuMixin {
     private static boolean isBlockedCraft(ItemStack stack, Player player) {
         if (player == null) return false;
 
-        Faction role = town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID());
-
-        if (role == Faction.MERCHANTS) {
-            if (isCombatItem(stack)) {
-                return true;
-            }
-        }
-
+        // Determine restriction category BEFORE looking up faction (avoids unnecessary API/cache hits)
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+
         boolean isFurnace = stack.is(Items.FURNACE) || stack.is(Items.BLAST_FURNACE);
         if (!isFurnace && id != null) {
-            String path = id.getPath().toLowerCase();
+            String path = id.getPath();
             if (path.contains("furnace") && !path.contains("minecart")) {
                 isFurnace = true;
             }
         }
 
         if (isFurnace) {
-            return role != Faction.LMI;
+            return town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID()) != Faction.LMI;
         }
 
-        if (stack.is(Items.BREWING_STAND)) {
-            return role != Faction.FISHERIES;
-        }
-
-        if (stack.is(Items.SMOKER)) {
-            return role != Faction.FISHERIES;
+        if (stack.is(Items.BREWING_STAND) || stack.is(Items.SMOKER)) {
+            return town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID()) != Faction.FISHERIES;
         }
 
         if (id != null && id.getNamespace().equals("lightmanscurrency")) {
             if (id.getPath().equals("tax_block")) {
-                return role != Faction.NOBILITY;
+                return town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID()) != Faction.NOBILITY;
             }
             if (id.getPath().equals("vending_machine_large_black")) {
-                return role != Faction.MERCHANTS;
+                return town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID()) != Faction.MERCHANTS;
             }
+        }
+
+        // Combat restriction: only MERCHANTS are blocked from crafting combat items
+        if (isCombatItem(stack)) {
+            return town.lampas.overrides.PlayerActivityListener.getPlayerFaction(player.getUUID()) == Faction.MERCHANTS;
         }
 
         return false;
