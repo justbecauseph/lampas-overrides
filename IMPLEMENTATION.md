@@ -167,3 +167,40 @@ These overrides govern the behaviors, costs, and availability of the Waystones m
     *   **Orange Sharestone** $\rightarrow$ `FISHERIES`
     *   **Purple Sharestone** $\rightarrow$ `NOBILITY`
 
+---
+
+## 6. Player Ladder (Stacking / Riding) System
+
+The Player Ladder system enables players to stack, ride, or pick up other players and living entities, creating a custom chain of riders.
+
+### 6.1 Configuration and Click Modes
+Behavior is configured in [ModConfig.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/ModConfig.java):
+*   **`LADDER_MODE`**: Specifies interaction type when right-clicking an entity: `RIDE` (player mounts target), `PICK_UP` (target mounts player), or `DO_NOTHING`.
+*   **`LADDER_ALLOW_PLAYERS`**: Toggles whether players can ride or pick up other players.
+*   **`LADDER_ALLOW_LIVING_ENTITIES`**: Toggles whether players can ride or pick up non-player living entities.
+*   **`LADDER_EXCLUDED_LIVING_ENTITIES`**: List of entity IDs/tags that are excluded from being ridden or picked up (e.g. boss entities like `minecraft:wither` or `minecraft:ender_dragon`).
+*   **`LADDER_STEP_UP_LIMIT` / `LADDER_PICK_UP_LIMIT`**: Defines the maximum height limit of the rider stack.
+*   **`LADDER_ALLOW_INTERACTIONS`**: Allows riders or vehicles to interact with the world.
+*   **`LADDER_RIDE_EXTENSION`**: Toggles the `/ride` command extension.
+
+### 6.2 Toggle Commands
+*   **`/playerladder toggle`** or **`/ladder toggle`**: Toggles whether player ladder interactions are active for the executing player.
+*   **Persistence**: Toggled status is stored in the player's persistent NBT data (`PlayerLadder_DisableRiding`).
+*   **Safety Dismount**: Disabling interactions automatically dismounts any active passengers or vehicles currently attached to the player.
+
+### 6.3 Event Hooks and Logic
+Core mechanics are managed in [PlayerLadderHandler.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerLadderHandler.java):
+*   **Player Interaction Hook (`EntityInteract`)**: Right-clicking an entity with an empty main hand triggers the riding/picking-up sequence. To prevent client desync (such as opening containers or ghost hand swings), the event is cancelled on both the client and server sides if a stack operation occurs.
+*   **Crouch Dismount Hook (`PlayerTickEvent.Post`)**: Checks every tick for on-ground players with passengers. If the player is crouching, their topmost passenger is dismounted.
+*   **Safety Hooks**: Dismounts passengers during `PlayerLoggedOutEvent` (logout safety) and `PlayerChangeGameModeEvent` (preventing creative/spectator stack exploits).
+
+### 6.4 Mixin Hooks
+*   **[EntityMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/EntityMixin.java)**: 
+    *   Intercepts `addPassenger` and `removePassenger` to broadcast a `ClientboundSetPassengersPacket` to the vehicle player. Includes connection null-safety guards.
+    *   Intercepts `startRiding` and bypasses the `canSerialize()` check if the vehicle is of type `PLAYER`, allowing players to be ridden.
+*   **[RideCommandMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/RideCommandMixin.java)**:
+    *   Redirects target entity `getType()` inside the vanilla `/ride mount` command. Returning `null` bypasses passenger serializability checks, extending the `/ride` command to support players.
+*   **[ProjectileUtilMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/ProjectileUtilMixin.java)**:
+    *   Injects a `@ModifyVariable` hook at the head of `ProjectileUtil.getEntityHitResult` to wrap the entity search filter predicate. Recursively filters out passengers from the player's collision raycast, allowing players to build/break blocks and attack enemies in front of them without hitting their passenger.
+
+

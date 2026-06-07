@@ -30,6 +30,12 @@ public class LampasOverridesMod {
         
         // Register the player activity listener to the global game event bus
         NeoForge.EVENT_BUS.register(new PlayerActivityListener());
+        
+        // Register PlayerLadderHandler config listener on mod event bus
+        modEventBus.addListener(PlayerLadderHandler::onConfigEvent);
+        
+        // Register PlayerLadderHandler to the global game event bus
+        NeoForge.EVENT_BUS.register(new PlayerLadderHandler());
     }
 
     private void addCreativeContents(BuildCreativeModeTabContentsEvent event) {

@@ -1,0 +1,37 @@
+package town.lampas.overrides.mixin;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import town.lampas.overrides.PlayerLadderHandler;
+
+@Mixin(Entity.class)
+public class EntityMixin {
+
+    @Inject(method = "removePassenger", at = @At("TAIL"))
+    private void playerladder$removePassenger(Entity passenger, CallbackInfo ci) {
+        PlayerLadderHandler.onDismount((Entity) (Object) this);
+    }
+
+    @Inject(method = "addPassenger", at = @At("TAIL"))
+    private void playerladder$onAddPassenger(Entity passenger, CallbackInfo ci) {
+        PlayerLadderHandler.onMount((Entity) (Object) this, passenger);
+    }
+
+    @WrapOperation(
+            method = "startRiding(Lnet/minecraft/world/entity/Entity;Z)Z",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/EntityType;canSerialize()Z")
+    )
+    private boolean playerladder$allowRidingPlayers(EntityType instance, Operation<Boolean> original) {
+        if (instance == EntityType.PLAYER) {
+            return true;
+        } else {
+            return original.call(instance);
+        }
+    }
+}

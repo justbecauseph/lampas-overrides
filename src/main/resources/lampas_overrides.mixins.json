@@ -15,10 +15,13 @@
     "TaxEntryMixin",
     "NeonBlockColorProcedureMixin",
     "FishingHookMixin",
-    "InternalMethodsImplMixin"
+    "InternalMethodsImplMixin",
+    "EntityMixin",
+    "RideCommandMixin"
   ],
   "client": [
-    "FormattedStringEditorMixin"
+    "FormattedStringEditorMixin",
+    "ProjectileUtilMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -15,6 +15,15 @@ public class ModConfig {
 
     public static final ModConfigSpec.ConfigValue<Boolean> TAX_COLLECTOR_FORCE_ACCEPTANCE;
 
+    public static final ModConfigSpec.EnumValue<ClickMode> LADDER_MODE;
+    public static final ModConfigSpec.IntValue LADDER_PICK_UP_LIMIT;
+    public static final ModConfigSpec.IntValue LADDER_STEP_UP_LIMIT;
+    public static final ModConfigSpec.BooleanValue LADDER_ALLOW_LIVING_ENTITIES;
+    public static final ModConfigSpec.BooleanValue LADDER_ALLOW_PLAYERS;
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> LADDER_EXCLUDED_LIVING_ENTITIES;
+    public static final ModConfigSpec.BooleanValue LADDER_RIDE_EXTENSION;
+    public static final ModConfigSpec.BooleanValue LADDER_ALLOW_INTERACTIONS;
+
     static {
         BUILDER.push("General Settings");
         WEBHOOK_URL = BUILDER.comment("The full URL of the webhook endpoint to notify when player events occur.")
@@ -35,6 +44,33 @@ public class ModConfig {
                 .define("taxCollectorForceAcceptance", true);
         BUILDER.pop();
 
+        BUILDER.push("Player Ladder Settings");
+        LADDER_MODE = BUILDER.comment("Action that occurs when you click on a player/entity.")
+                .defineEnum("rightClickMode", ClickMode.RIDE);
+        LADDER_PICK_UP_LIMIT = BUILDER.comment("Limits how many entities a player can pick up.")
+                .defineInRange("pickUpLimit", 16, 1, Integer.MAX_VALUE);
+        LADDER_STEP_UP_LIMIT = BUILDER.comment("Limits how many entities up a player can go.")
+                .defineInRange("stepUpLimit", 16, 1, Integer.MAX_VALUE);
+        LADDER_ALLOW_LIVING_ENTITIES = BUILDER.comment("Allows riding or picking up any living entity.")
+                .define("allowLivingEntities", false);
+        LADDER_ALLOW_PLAYERS = BUILDER.comment("Allows riding or picking up any player.")
+                .define("allowPlayers", true);
+        LADDER_EXCLUDED_LIVING_ENTITIES = BUILDER.comment("The list of living entities that can't be ridden/picked up. Supports entity tags e.g: #minecraft:dismounts_underwater")
+                .defineList("excludedLivingEntities",
+                        () -> java.util.List.of("minecraft:wither", "minecraft:ender_dragon", "minecraft:minecart", "#minecraft:boat", "#minecraft:dismounts_underwater"), object -> true);
+        LADDER_RIDE_EXTENSION = BUILDER.comment("Allows the /ride command to mount entities on top of players.")
+                .define("rideCommandExtension", true);
+        LADDER_ALLOW_INTERACTIONS = BUILDER.comment("Allows interacting with the world while there's an entity on top of you.")
+                .define("allowInteractions", true);
+        BUILDER.pop();
+
         SPEC = BUILDER.build();
     }
+
+    public enum ClickMode {
+        RIDE,
+        PICK_UP,
+        DO_NOTHING
+    }
 }
+
