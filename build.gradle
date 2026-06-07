@@ -46,6 +46,7 @@ repositories {
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
     implementation "maven.modrinth:lightmans-currency:1.21-2.3.0.4f"
+    compileOnly "maven.modrinth:lets-do-wildernature:1.1.4"
 }
 
 tasks.withType(ProcessResources).configureEach {
@@ -72,3 +73,6 @@ tasks.withType(ProcessResources).configureEach {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+
+

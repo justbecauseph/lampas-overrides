@@ -96,3 +96,50 @@ Logins and logouts trigger async HTTP POST requests to `ModConfig.WEBHOOK_URL` c
         *   The Totem of Undying use animation and sound are broadcast (Entity Event Status 35).
         *   The player is sent the message: *"Your Eldritch blessing saved you from death!"*
 *   **Source References**: [BookOfEldritchItem.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/BookOfEldritchItem.java) and [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java#L256-L281).
+
+---
+
+## 4. Bounty Board System
+
+The Bounty Board system enables players to view and claim custom community/server-defined bounties posted on the web portal database directly within Minecraft by interacting with a WilderNature Bounty Board block.
+
+### 4.1 Next.js Bounty API
+The web application hosts REST endpoints at `/api/minecraft/bounties` (defined in [route.ts](file:///C:/Users/markj/source/repos/lampas/app/src/app/api/minecraft/bounties/route.ts)), which are secured by verifying the `x-api-key` header matching the server's configured key.
+*   **`GET`**: Returns a list of all `OPEN` bounties. Each entry includes:
+    *   `id`: The unique bounty UUID.
+    *   `title` / `description`: Text parameters of the bounty.
+    *   `prizeType` / `prizeAmount`: Rewards configured on the database.
+    *   `claims`: A list of player UUID strings that have already claimed/accepted the bounty.
+*   **`POST`**: Accepts `{ uuid, bountyId }` to claim/accept a bounty.
+    *   Validates player existence and ensures the bounty is currently `OPEN`.
+    *   Prevents posters from claiming their own bounties.
+    *   Ensures a player cannot claim a bounty multiple times.
+    *   Creates a new `bountyClaim` record and registers a database `AuditLog` entry.
+
+### 4.2 Decoupled API Fetcher
+The Java class [BountyApiFetcher.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/BountyApiFetcher.java) communicates asynchronously with the web portal API.
+*   **Bounty POJO**: Declares a lightweight, independent `Bounty` record containing the fields retrieved from the API, resolving any direct binary dependencies on WilderNature class files.
+*   **Caching & TTL**: Implements a memory cache (`cachedBounties`) that expires every 15 seconds. Requests made within the 15-second TTL window receive the cached list immediately, avoiding API rate limits.
+*   **Async Dispatch**: Dispatches HTTP GET and POST requests using Java 21's asynchronous `HttpClient.sendAsync`.
+
+### 4.3 Virtual Written Book UI
+When a player right-clicks a Bounty Board block (`lets-do-wildernature:bounty_board`), the default screen UI is bypassed. Instead, [BountyBoardBlockMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/BountyBoardBlockMixin.java) intercepts the block use event and constructs a temporary graphical book screen:
+*   **Book Assembly**: Generates a virtual `Items.WRITTEN_BOOK` with pages formatted dynamically:
+    *   *Welcome Page*: Explains how to navigate and accept active contracts.
+    *   *Bounty Pages*: Creates a page for each active bounty containing details (Title, Objective, Reward).
+    *   *Interaction ClickEvent*: Appends a clickable element running the command `/claimbounty <bountyId>`. If a bounty is already claimed by the player, it displays `[ ALREADY CLAIMED ]` instead.
+*   **Hand Swapping Trick**: To trigger the native Minecraft book reading overlay without permanently placing a written book in the player's inventory:
+    1.  Temporarily replaces the player's main-hand item with the virtual book.
+    2.  Sends a `ClientboundContainerSetSlotPacket` to force the client to recognize the book.
+    3.  Calls NeoForge's `player.openItemGui` to open the screen.
+    4.  Restores the player's original main-hand item on the server.
+    5.  Sends another `ClientboundContainerSetSlotPacket` to sync the restored hand item back to the client.
+
+### 4.4 Proximity-Restricted Claim Command
+The `/claimbounty <id>` command is registered during the command registration event in [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java#L352-L429).
+*   **Proximity Validation**: Before dispatching a claim query, the command verifies that the executing player is within an 8-block horizontal range and a 4-block vertical range of a valid `BountyBoardBlock`.
+*   **API Execution**: Executes `BountyApiFetcher.claimBountyAsync` to claim the bounty.
+*   **Reward/Contract Delivery**: On successful API acknowledgment:
+    *   Fashions a custom `Items.PAPER` item with the bounty's title (colored gold/bold) and the description and reward detailed in the item's lore components.
+    *   Attempts to add the contract to the player's inventory, dropping it at their feet if full.
+    *   Plays the `UI_TOAST_CHALLENGE_COMPLETE` sound to confirm success.

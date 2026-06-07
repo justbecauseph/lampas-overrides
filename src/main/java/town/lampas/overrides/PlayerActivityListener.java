@@ -347,5 +347,85 @@ public class PlayerActivityListener {
         }
         checkAndCancelFishingRodUse(event, event.getEntity());
     }
+
+    @SubscribeEvent
+    public void onRegisterCommands(net.neoforged.neoforge.event.RegisterCommandsEvent event) {
+        event.getDispatcher().register(
+            net.minecraft.commands.Commands.literal("claimbounty")
+                .then(net.minecraft.commands.Commands.argument("id", com.mojang.brigadier.arguments.StringArgumentType.string())
+                    .executes(context -> {
+                        String idStr = com.mojang.brigadier.arguments.StringArgumentType.getString(context, "id");
+                        net.minecraft.server.level.ServerPlayer player = context.getSource().getPlayerOrException();
+                        
+                        // We check if the player is near a Bounty Board block.
+                        BlockPos playerPos = player.blockPosition();
+                        boolean nearBoard = false;
+                        for (BlockPos pos : BlockPos.betweenClosed(playerPos.offset(-8, -4, -8), playerPos.offset(8, 4, 8))) {
+                            if (player.level().getBlockState(pos).getBlock() instanceof net.satisfy.wildernature.core.block.BountyBoardBlock) {
+                                nearBoard = true;
+                                break;
+                            }
+                        }
+                        
+                        if (!nearBoard) {
+                            context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("You must be near a Bounty Board to claim a contract."));
+                            return 0;
+                        }
+                        
+                        java.util.UUID bountyId;
+                        try {
+                            bountyId = java.util.UUID.fromString(idStr);
+                        } catch (IllegalArgumentException e) {
+                            context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("Invalid bounty ID format."));
+                            return 0;
+                        }
+                        
+                        List<BountyApiFetcher.Bounty> bounties = BountyApiFetcher.getBounties();
+                        BountyApiFetcher.Bounty target = null;
+                        for (BountyApiFetcher.Bounty b : bounties) {
+                            if (b.id().equals(bountyId)) {
+                                target = b;
+                                break;
+                            }
+                        }
+                        
+                        if (target == null) {
+                            context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("Contract has expired or was not found."));
+                            return 0;
+                        }
+                        
+                        if (target.isClaimedBy(player.getUUID())) {
+                            context.getSource().sendFailure(net.minecraft.network.chat.Component.literal("You have already accepted this contract!"));
+                            return 0;
+                        }
+                        
+                        BountyApiFetcher.Bounty finalTarget = target;
+                        BountyApiFetcher.claimBountyAsync(player, bountyId, () -> {
+                            // On Success
+                            // Create custom contract paper stack
+                            net.minecraft.world.item.ItemStack contract = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.PAPER);
+                            contract.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal(finalTarget.title()).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+                            
+                            java.util.List<net.minecraft.network.chat.Component> lore = new java.util.ArrayList<>();
+                            lore.add(net.minecraft.network.chat.Component.literal(finalTarget.description()).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+                            lore.add(net.minecraft.network.chat.Component.literal("Reward: " + finalTarget.prizeAmount() + " " + finalTarget.prizeType()).withStyle(ChatFormatting.DARK_GREEN));
+                            contract.set(net.minecraft.core.component.DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(lore));
+                            
+                            if (!player.getInventory().add(contract)) {
+                                player.drop(contract, false);
+                            }
+                            
+                            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Contract '" + finalTarget.title() + "' accepted successfully! Details added to your inventory.")
+                                    .withStyle(ChatFormatting.GREEN));
+                            player.level().playSound(null, player.blockPosition(), net.minecraft.sounds.SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+                        }, (error) -> {
+                            // On Failure
+                            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Failed to accept contract: " + error).withStyle(ChatFormatting.RED));
+                        });
+                        return 1;
+                    })
+                )
+        );
+    }
 }
 

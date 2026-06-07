@@ -14,7 +14,8 @@
     "CraftingMenuMixin",
     "TaxEntryMixin",
     "NeonBlockColorProcedureMixin",
-    "FishingHookMixin"
+    "FishingHookMixin",
+    "BountyBoardBlockMixin"
   ],
   "client": [
     "FormattedStringEditorMixin"
