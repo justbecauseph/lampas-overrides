@@ -141,9 +141,6 @@ public class PlayerActivityListener {
         }
 
         Player player = event.getEntity();
-        if (checkAndCancelFishingRodUse(event, player)) {
-            return;
-        }
         if (player != null && !player.hasPermissions(2)) {
             Faction requiredRole = getRequiredFactionForBlock(state);
             if (requiredRole != Faction.NONE) {
@@ -295,64 +292,6 @@ public class PlayerActivityListener {
         }
     }
 
-    private boolean isFishingRod(net.minecraft.world.item.ItemStack stack) {
-        if (stack.isEmpty()) {
-            return false;
-        }
-        return stack.getItem() instanceof net.minecraft.world.item.FishingRodItem;
-    }
-
-    private boolean checkAndCancelFishingRodUse(PlayerInteractEvent event, Player player) {
-        if (player != null && !player.hasPermissions(2)) {
-            net.minecraft.world.item.ItemStack stack = event.getItemStack();
-            if (isFishingRod(stack)) {
-                Faction role = getPlayerFaction(player.getUUID());
-                if (role != Faction.FISHERIES) {
-                    if (event instanceof net.neoforged.bus.api.ICancellableEvent cancellable) {
-                        cancellable.setCanceled(true);
-                    }
-                    if (event instanceof PlayerInteractEvent.RightClickBlock rcb) {
-                        rcb.setCancellationResult(InteractionResult.FAIL);
-                    } else if (event instanceof PlayerInteractEvent.RightClickItem rci) {
-                        rci.setCancellationResult(InteractionResult.FAIL);
-                    } else if (event instanceof PlayerInteractEvent.EntityInteract ei) {
-                        ei.setCancellationResult(InteractionResult.FAIL);
-                    } else if (event instanceof PlayerInteractEvent.EntityInteractSpecific eis) {
-                        eis.setCancellationResult(InteractionResult.FAIL);
-                    }
-                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal(
-                        "You must have the FISHERIES role to use fishing rods!"
-                    ).withStyle(ChatFormatting.RED));
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    @SubscribeEvent
-    public void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
-        if (event.getLevel().isClientSide) {
-            return;
-        }
-        checkAndCancelFishingRodUse(event, event.getEntity());
-    }
-
-    @SubscribeEvent
-    public void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-        if (event.getLevel().isClientSide) {
-            return;
-        }
-        checkAndCancelFishingRodUse(event, event.getEntity());
-    }
-
-    @SubscribeEvent
-    public void onEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
-        if (event.getLevel().isClientSide) {
-            return;
-        }
-        checkAndCancelFishingRodUse(event, event.getEntity());
-    }
 
     @SubscribeEvent
     public void onRegisterCommands(net.neoforged.neoforge.event.RegisterCommandsEvent event) {

@@ -13,7 +13,7 @@ The factions are defined as enum constants in [Faction.java](file:///C:/Users/ma
 *   **`LMI`**: Lampas Marine Institute (controls metal smelting and metallurgy).
 *   **`MERCHANTS`**: Controls commerce and trade, restricted from heavy weaponry, has exclusive access to the Large Black Vending Machine, and controls the Lime Sharestone.
 *   **`RELIGION`**: Exclusive access to arcane/eldritch artifacts, and controls the Red Sharestone.
-*   **`FISHERIES`**: Controls brewing, smoking, food prep, fishing (only faction allowed to use fishing rods), and controls the Orange Sharestone.
+*   **`FISHERIES`**: Controls brewing, smoking, food prep, receives passive buffs when fishing, and controls the Orange Sharestone.
 *   **`NOBILITY`**: Exclusive control over city tax infrastructure, and controls the Purple Sharestone.
 *   **`NONE`**: Default state for players with no faction assigned.
 
@@ -49,19 +49,14 @@ Logins and logouts trigger async HTTP POST requests to `ModConfig.WEBHOOK_URL` c
 *   **Brewing & Smoker Restrictions**:
     *   **Interaction**: Only `FISHERIES` members can interact with Brewing Stands (`Blocks.BREWING_STAND`) and Smokers (`Blocks.SMOKER`).
     *   **Crafting**: Only `FISHERIES` members can craft Brewing Stands (`Items.BREWING_STAND`) and Smokers (`Items.SMOKER`).
-*   **Fishing Rod Restrictions**:
-    *   Only `FISHERIES` members are allowed to use Fishing Rods.
-    *   Attempts to right-click blocks/items, or interact with entities/specific entities with a fishing rod in hand are canceled for non-Fisheries players.
-    *   **Target Criteria**: Any item that extends `FishingRodItem`.
-*   **Fishing Luck and Speed Passive Buffs**:
-    *   `FISHERIES` faction members receive a passive boost to their fishing efficiency and quality.
+*   **Fishing Luck and Speed Passive Buffs (Fisheries only)**:
+    *   While all players are allowed to use Fishing Rods, only `FISHERIES` faction members receive a passive boost to their fishing efficiency and quality.
     *   When casting a line, the generated `FishingHook` is intercepted via a mixin:
         *   `lureSpeed` is increased by `100` ticks (equivalent to **+1 level of Lure** / reducing bite wait time by 5 seconds).
         *   `luck` is increased by `2` (equivalent to **+2 levels of Luck of the Sea**).
     *   These passive buffs fully stack with Lure and Luck of the Sea enchantments applied to the player's fishing rod.
 *   **Source References**:
-    *   Blocks: [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java#L144-L153) & [CraftingMenuMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/CraftingMenuMixin.java#L87-L93)
-    *   Fishing Rod Restriction: [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java#L327-L352)
+    *   Blocks: [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java#L144-L156) & [CraftingMenuMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/CraftingMenuMixin.java#L87-L93)
     *   Fishing Rod Buffs: [FishingHookMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/FishingHookMixin.java)
 
 ### 3.3 NOBILITY
