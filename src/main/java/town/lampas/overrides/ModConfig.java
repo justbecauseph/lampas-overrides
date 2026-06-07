@@ -11,6 +11,7 @@ public class ModConfig {
 
     public static final ModConfigSpec.ConfigValue<String> BANK_SYNC_URL;
     public static final ModConfigSpec.ConfigValue<String> PLAYER_API_URL;
+    public static final ModConfigSpec.ConfigValue<String> BOUNTIES_API_URL;
 
     public static final ModConfigSpec.ConfigValue<Boolean> TAX_COLLECTOR_FORCE_ACCEPTANCE;
 
@@ -26,6 +27,9 @@ public class ModConfig {
 
         PLAYER_API_URL = BUILDER.comment("The full URL of the player API endpoint to retrieve player roles.")
                 .define("playerApiUrl", "http://localhost:3000/api/minecraft/player");
+
+        BOUNTIES_API_URL = BUILDER.comment("The full URL of the bounties API endpoint to retrieve and claim bounties.")
+                .define("bountiesApiUrl", "http://localhost:3000/api/minecraft/bounties");
 
         TAX_COLLECTOR_FORCE_ACCEPTANCE = BUILDER.comment("Whether newly created Tax Collectors will default to Force Acceptance being enabled.")
                 .define("taxCollectorForceAcceptance", true);

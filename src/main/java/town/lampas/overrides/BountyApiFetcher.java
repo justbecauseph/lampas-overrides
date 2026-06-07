@@ -37,14 +37,7 @@ public class BountyApiFetcher {
     private static long lastFetchTime = 0;
 
     public static String getBountiesUrl() {
-        String playerUrl = ModConfig.PLAYER_API_URL.get();
-        if (playerUrl != null && !playerUrl.isEmpty()) {
-            if (playerUrl.endsWith("/player")) {
-                return playerUrl.substring(0, playerUrl.length() - 7) + "/bounties";
-            }
-            return playerUrl + "/bounties";
-        }
-        return "http://localhost:3000/api/minecraft/bounties";
+        return ModConfig.BOUNTIES_API_URL.get();
     }
 
     public interface BountiesReceiver {
