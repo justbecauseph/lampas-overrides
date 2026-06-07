@@ -470,15 +470,15 @@ public class PlayerActivityListener {
             java.util.List<String> rewardLinesWrapped = wrapTextWithOffset(rewardText, maxLineWidth, 8); // "Reward: " is 8 chars
             int rewardLines = Math.max(1, rewardLinesWrapped.size());
 
-            // Total budget for title + description = maxLines - 4 - rewardLines
-            int combinedBudget = maxLines - 4 - rewardLines;
+            // Total budget for title + description = maxLines - 3 - rewardLines
+            int combinedBudget = maxLines - 3 - rewardLines;
             if (combinedBudget < 2) {
                 combinedBudget = 2; // fallback safety
             }
 
             // Allocate at most 2 lines for the title
             int maxTitleLines = 2;
-            java.util.List<String> tempTitleLines = wrapTextWithOffset(bounty.title(), maxLineWidth, 7); // "Title: " is 7 chars
+            java.util.List<String> tempTitleLines = wrapTextWithOffset(bounty.title(), maxLineWidth, 0); // No offset since no label
             int titleLines = Math.min(maxTitleLines, Math.max(1, tempTitleLines.size()));
 
             // Remaining budget goes to description
@@ -488,15 +488,12 @@ public class PlayerActivityListener {
             }
 
             // Apply truncation/wrapping
-            String finalTitle = truncateTextWithOffset(bounty.title(), maxLineWidth, 7, titleLines);
+            String finalTitle = truncateTextWithOffset(bounty.title(), maxLineWidth, 0, titleLines);
             String finalDesc = truncateTextWithOffset(bounty.description(), maxLineWidth, 0, descBudget);
             String finalReward = String.join("\n", rewardLinesWrapped);
 
             net.minecraft.network.chat.MutableComponent page = Component.literal("=== CONTRACT ===\n").withStyle(ChatFormatting.GOLD);
-            page.append(Component.literal("Title: ").withStyle(ChatFormatting.DARK_GRAY));
-            page.append(Component.literal(finalTitle + "\n").withStyle(ChatFormatting.DARK_BLUE));
-
-            page.append(Component.literal("Objective:\n").withStyle(ChatFormatting.DARK_GRAY));
+            page.append(Component.literal(finalTitle + "\n").withStyle(style -> style.withColor(ChatFormatting.DARK_BLUE).withUnderlined(true)));
             page.append(Component.literal(finalDesc + "\n").withStyle(ChatFormatting.ITALIC, ChatFormatting.BLACK));
 
             page.append(Component.literal("Reward: ").withStyle(ChatFormatting.DARK_GRAY));
