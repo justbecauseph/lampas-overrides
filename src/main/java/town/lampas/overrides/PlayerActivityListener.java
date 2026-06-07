@@ -126,7 +126,6 @@ public class PlayerActivityListener {
             Player player = event.getEntity();
             if (player instanceof ServerPlayer serverPlayer) {
                 LAST_BOUNTY_BOARD_POS.put(player.getUUID(), event.getPos());
-                serverPlayer.sendSystemMessage(Component.literal("Loading bounties...").withStyle(ChatFormatting.YELLOW));
                 BountyApiFetcher.getBountiesAsync(bounties -> {
                     serverPlayer.server.execute(() -> {
                         openBountyBoardBook(serverPlayer, bounties);

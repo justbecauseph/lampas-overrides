@@ -142,7 +142,7 @@ The `/claimbounty <id>` command is registered during the command registration ev
 *   **Proximity Validation**: Before dispatching a claim query, the command verifies that the executing player is within an 8-block horizontal range and a 4-block vertical range of a valid `BountyBoardBlock`.
 *   **API Execution**: Executes `BountyApiFetcher.claimBountyAsync` to claim the bounty.
 *   **Reward/Contract Delivery**: On successful API acknowledgment:
-    *   Fashions a custom `Items.PAPER` item with the bounty's title (colored gold) and the description and reward detailed in the item's lore components.
+    *   Fashions a custom `Items.PAPER` item with the bounty's title (colored gold) and the description and reward detailed in the item's lore components. Monetary rewards are formatted using "Aur" or "Aurs" labels (e.g., "1 Aur" or "99 Aurs").
     *   Applies a 35-character word-wrap to the description in the contract paper's lore so the tooltip breaks into readable lines without stretching off-screen, while keeping the full text unabridged (no truncation).
     *   Attempts to add the contract to the player's inventory, dropping it at their feet if full.
     *   Plays the `UI_TOAST_CHALLENGE_COMPLETE` sound to confirm success.

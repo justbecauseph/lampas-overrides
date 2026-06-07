@@ -30,6 +30,8 @@ public class BountyApiFetcher {
                 return prizeItem != null ? prizeItem : "Unknown Item";
             } else if ("OTHER".equalsIgnoreCase(prizeType)) {
                 return prizeOther != null ? prizeOther : "Unknown Reward";
+            } else if ("MONEY".equalsIgnoreCase(prizeType) || "COINS".equalsIgnoreCase(prizeType)) {
+                return prizeAmount == 1 ? "1 Aur" : prizeAmount + " Aurs";
             } else {
                 return prizeAmount + " " + prizeType;
             }
