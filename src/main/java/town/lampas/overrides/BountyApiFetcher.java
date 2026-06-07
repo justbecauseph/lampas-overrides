@@ -15,8 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.slf4j.Logger;
+import com.mojang.logging.LogUtils;
 
 public class BountyApiFetcher {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
             .build();
@@ -119,7 +122,7 @@ public class BountyApiFetcher {
                                 cachedBounties.clear();
                                 cachedBounties.addAll(tempBounties);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                LOGGER.error("Failed to parse bounties response: {}", e.getMessage(), e);
                             }
                         }
                         if (receiver != null) {
@@ -127,14 +130,14 @@ public class BountyApiFetcher {
                         }
                     })
                     .exceptionally(ex -> {
-                        ex.printStackTrace();
+                        LOGGER.warn("Failed to fetch bounties from API endpoint {}: {}", url, ex.getMessage());
                         if (receiver != null) {
                             receiver.accept(new ArrayList<>(cachedBounties));
                         }
                         return null;
                     });
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to build or send bounties request: {}", e.getMessage(), e);
             if (receiver != null) {
                 receiver.accept(new ArrayList<>(cachedBounties));
             }
