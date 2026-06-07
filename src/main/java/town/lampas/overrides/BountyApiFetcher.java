@@ -26,6 +26,9 @@ public class BountyApiFetcher {
         }
 
         public String getRewardText() {
+            if (prizeAmount == 0 || prizeType == null || "NONE".equalsIgnoreCase(prizeType)) {
+                return "NONE";
+            }
             if ("ITEM".equalsIgnoreCase(prizeType)) {
                 return prizeItem != null ? prizeItem : "Unknown Item";
             } else if ("OTHER".equalsIgnoreCase(prizeType)) {

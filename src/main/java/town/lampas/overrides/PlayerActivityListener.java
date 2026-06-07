@@ -432,9 +432,9 @@ public class PlayerActivityListener {
             String finalReward = String.join("\n", rewardLinesWrapped);
 
             net.minecraft.network.chat.MutableComponent page = Component.literal("=== CONTRACT ===\n").withStyle(ChatFormatting.GOLD);
-            page.append(Component.literal(finalTitle + "\n").withStyle(style -> style.withColor(ChatFormatting.DARK_BLUE).withUnderlined(true)));
+            page.append(Component.literal(finalTitle + "\n\n").withStyle(style -> style.withColor(ChatFormatting.DARK_BLUE).withUnderlined(true)));
             page.append(Component.literal("From: ").withStyle(ChatFormatting.DARK_GRAY));
-            page.append(Component.literal(bounty.poster() + "\n").withStyle(ChatFormatting.BLACK));
+            page.append(Component.literal(bounty.poster() + "\n\n").withStyle(ChatFormatting.BLACK));
             page.append(Component.literal(finalDesc + "\n").withStyle(ChatFormatting.ITALIC, ChatFormatting.BLACK));
 
             page.append(Component.literal("Reward: ").withStyle(ChatFormatting.DARK_GRAY));

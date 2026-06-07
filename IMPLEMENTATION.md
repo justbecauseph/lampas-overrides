@@ -114,7 +114,7 @@ The web application hosts REST endpoints at `/api/minecraft/bounties` (defined i
 ### 4.2 Decoupled API Fetcher
 The Java class [BountyApiFetcher.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/BountyApiFetcher.java) communicates asynchronously with the web portal API.
 *   **Configurable Endpoint**: Fetches the target API server endpoint directly from the `bountiesApiUrl` configuration setting (`ModConfig.BOUNTIES_API_URL`) inside `General Settings`.
-*   **Bounty POJO**: Declares a lightweight, independent `Bounty` record containing the fields retrieved from the API, resolving any direct binary dependencies on WilderNature class files. It supports non-monetary rewards (e.g., `ITEM` and `OTHER` prize types) by storing `prizeItem` and `prizeOther` fields and exposing them directly as plain text via a formatting helper.
+*   **Bounty POJO**: Declares a lightweight, independent `Bounty` record containing the fields retrieved from the API, resolving any direct binary dependencies on WilderNature class files. It supports non-monetary rewards (e.g., `ITEM` and `OTHER` prize types) by storing `prizeItem` and `prizeOther` fields and exposing them directly as plain text via a formatting helper. If the reward amount is 0 or the prize type is "NONE", the reward text evaluates to "NONE".
 *   **Caching & TTL**: Implements a memory cache (`cachedBounties`) that expires every 15 seconds. Requests made within the 15-second TTL window receive the cached list immediately, avoiding API rate limits.
 *   **Async Dispatch**: Dispatches HTTP GET and POST requests using Java 21's asynchronous `HttpClient.sendAsync`.
 
@@ -137,7 +137,7 @@ The `/claimbounty <id>` command is registered during the command registration ev
 *   **Proximity Validation**: Before dispatching a claim query, the command verifies that the executing player is within an 8-block horizontal range and a 4-block vertical range of a valid `BountyBoardBlock`.
 *   **API Execution**: Executes `BountyApiFetcher.claimBountyAsync` to claim the bounty.
 *   **Reward/Contract Delivery**: On successful API acknowledgment:
-    *   Fashions a custom `Items.PAPER` item with the bounty's title (colored gold) and the description and reward detailed in the item's lore components. Monetary rewards are formatted using "Aur" or "Aurs" labels (e.g., "1 Aur" or "99 Aurs").
+    *   Fashions a custom `Items.PAPER` item with the bounty's title (colored gold) and the description and reward detailed in the item's lore components. Monetary rewards are formatted using "Aur" or "Aurs" labels (e.g., "1 Aur" or "99 Aurs"). If the reward amount is 0 or the prize type is "NONE", it is displayed as "NONE".
     *   Applies a 35-character word-wrap to the description in the contract paper's lore so the tooltip breaks into readable lines without stretching off-screen, while keeping the full text unabridged (no truncation).
     *   Attempts to add the contract to the player's inventory, dropping it at their feet if full.
     *   Plays the `UI_TOAST_CHALLENGE_COMPLETE` sound to confirm success.
