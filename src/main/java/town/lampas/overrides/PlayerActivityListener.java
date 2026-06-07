@@ -180,9 +180,29 @@ public class PlayerActivityListener {
                 if (path.equals("tax_block")) return Faction.NOBILITY;
                 if (path.equals("vending_machine_large_black")) return Faction.MERCHANTS;
             }
+            if (id.getNamespace().equals("waystones")) {
+                Faction required = getRequiredFactionForSharestone(path);
+                if (required != Faction.NONE) {
+                    return required;
+                }
+            }
         }
         return Faction.NONE;
     }
+
+    public static Faction getRequiredFactionForSharestone(String path) {
+        if (path == null) return Faction.NONE;
+        return switch (path) {
+            case "cyan_sharestone" -> Faction.NAVY;
+            case "magenta_sharestone" -> Faction.TOURISM;
+            case "lime_sharestone" -> Faction.MERCHANTS;
+            case "red_sharestone" -> Faction.RELIGION;
+            case "orange_sharestone" -> Faction.FISHERIES;
+            case "purple_sharestone" -> Faction.NOBILITY;
+            default -> Faction.NONE;
+        };
+    }
+
 
     public static void fetchPlayerFactionAsync(java.util.UUID uuid) {
         String url = getPlayerApiUrl(uuid.toString());

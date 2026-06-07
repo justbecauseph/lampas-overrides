@@ -8,13 +8,13 @@ This document enumerates the custom rules, restrictions, and behaviors applied t
 
 The factions are defined as enum constants in [Faction.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/Faction.java):
 
-*   **`NAVY`**: No active overrides in the codebase.
-*   **`TOURISM`**: No active overrides in the codebase.
+*   **`NAVY`**: Controls the Cyan Sharestone.
+*   **`TOURISM`**: Controls the Magenta Sharestone.
 *   **`LMI`**: Lampas Marine Institute (controls metal smelting and metallurgy).
-*   **`MERCHANTS`**: Controls commerce and trade, restricted from heavy weaponry, and has exclusive access to the Large Black Vending Machine.
-*   **`RELIGION`**: Exclusive access to arcane/eldritch artifacts.
-*   **`FISHERIES`**: Controls brewing, smoking, food prep, and fishing (only faction allowed to use fishing rods).
-*   **`NOBILITY`**: Exclusive control over city tax infrastructure.
+*   **`MERCHANTS`**: Controls commerce and trade, restricted from heavy weaponry, has exclusive access to the Large Black Vending Machine, and controls the Lime Sharestone.
+*   **`RELIGION`**: Exclusive access to arcane/eldritch artifacts, and controls the Red Sharestone.
+*   **`FISHERIES`**: Controls brewing, smoking, food prep, fishing (only faction allowed to use fishing rods), and controls the Orange Sharestone.
+*   **`NOBILITY`**: Exclusive control over city tax infrastructure, and controls the Purple Sharestone.
 *   **`NONE`**: Default state for players with no faction assigned.
 
 ---
@@ -146,3 +146,29 @@ The `/claimbounty <id>` command is registered during the command registration ev
     *   Applies a 35-character word-wrap to the description in the contract paper's lore so the tooltip breaks into readable lines without stretching off-screen, while keeping the full text unabridged (no truncation).
     *   Attempts to add the contract to the player's inventory, dropping it at their feet if full.
     *   Plays the `UI_TOAST_CHALLENGE_COMPLETE` sound to confirm success.
+
+---
+
+## 5. Waystones & Sharestones Overrides
+
+These overrides govern the behaviors, costs, and availability of the Waystones mod elements.
+
+### 5.1 Warp Stone Crafting Disablement
+*   **Recipe Override**: The default crafting recipe for the Warp Stone (`waystones:warp_stone`) is overridden via a custom datapack recipe file located at [warp_stone.json (recipe)](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/resources/data/waystones/recipe/warp_stone.json).
+*   **False Condition**: A `"neoforge:conditions"` array featuring `neoforge:false` is injected into the recipe and advancement files ([warp_stone.json (advancement)](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/resources/data/waystones/advancement/recipes/decorations/warp_stone.json)). This causes the recipe to be ignored by Minecraft's recipe manager, effectively disabling its crafting entirely.
+
+### 5.2 Sharestone-to-Sharestone Free Warping
+*   **Mixin Interception**: [InternalMethodsImplMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/InternalMethodsImplMixin.java) intercepts `resolveRequirements`.
+*   **Warp Cost Override**: If both the source (`fromWaystone`) and destination (`targetWaystone`) blocks are sharestones (identified by registry paths ending with `_sharestone`), the mixin cancels the default cost calculation and returns `NoRequirement.INSTANCE`. This results in completely free teleportation between sharestones, and removes the cost tooltip/indicator on the UI buttons.
+
+### 5.3 Faction-Restricted Colored Sharestones
+*   **Usage Block**: To restrict colored sharestones to specific factions, interactions (right-clicking) are checked in [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java#L187-L200) inside `getRequiredFactionForBlock`.
+*   **Destination Check**: Teleporting to a faction-restricted sharestone from other locations is blocked in [InternalMethodsImplMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/InternalMethodsImplMixin.java). If a player attempts to teleport to a restricted sharestone without belonging to that faction, the mixin returns `new RefuseRequirement(...)` with a message stating: *"You must belong to the <FACTION> faction to use this sharestone."*
+*   **Mappings**:
+    *   **Cyan Sharestone** $\rightarrow$ `NAVY`
+    *   **Magenta Sharestone** $\rightarrow$ `TOURISM`
+    *   **Lime Sharestone** $\rightarrow$ `MERCHANTS`
+    *   **Red Sharestone** $\rightarrow$ `RELIGION`
+    *   **Orange Sharestone** $\rightarrow$ `FISHERIES`
+    *   **Purple Sharestone** $\rightarrow$ `NOBILITY`
+
