@@ -462,16 +462,16 @@ public class PlayerActivityListener {
 
         // Add a page for each bounty
         for (BountyApiFetcher.Bounty bounty : bounties) {
-            int maxLines = 15;
-            int maxLineWidth = 25;
+            int maxLines = 14;
+            int maxLineWidth = 19;
 
             // Compute reward lines wrapped dynamically
             String rewardText = bounty.getRewardText();
             java.util.List<String> rewardLinesWrapped = wrapTextWithOffset(rewardText, maxLineWidth, 8); // "Reward: " is 8 chars
             int rewardLines = Math.max(1, rewardLinesWrapped.size());
 
-            // Total budget for title + description = maxLines - 7 - rewardLines
-            int combinedBudget = maxLines - 7 - rewardLines;
+            // Total budget for title + description = maxLines - 4 - rewardLines
+            int combinedBudget = maxLines - 4 - rewardLines;
             if (combinedBudget < 2) {
                 combinedBudget = 2; // fallback safety
             }
@@ -492,12 +492,12 @@ public class PlayerActivityListener {
             String finalDesc = truncateTextWithOffset(bounty.description(), maxLineWidth, 0, descBudget);
             String finalReward = String.join("\n", rewardLinesWrapped);
 
-            net.minecraft.network.chat.MutableComponent page = Component.literal("=== CONTRACT ===\n\n").withStyle(ChatFormatting.GOLD);
+            net.minecraft.network.chat.MutableComponent page = Component.literal("=== CONTRACT ===\n").withStyle(ChatFormatting.GOLD);
             page.append(Component.literal("Title: ").withStyle(ChatFormatting.DARK_GRAY));
-            page.append(Component.literal(finalTitle + "\n\n").withStyle(ChatFormatting.DARK_BLUE));
+            page.append(Component.literal(finalTitle + "\n").withStyle(ChatFormatting.DARK_BLUE));
 
             page.append(Component.literal("Objective:\n").withStyle(ChatFormatting.DARK_GRAY));
-            page.append(Component.literal(finalDesc + "\n\n").withStyle(ChatFormatting.ITALIC, ChatFormatting.BLACK));
+            page.append(Component.literal(finalDesc + "\n").withStyle(ChatFormatting.ITALIC, ChatFormatting.BLACK));
 
             page.append(Component.literal("Reward: ").withStyle(ChatFormatting.DARK_GRAY));
             page.append(Component.literal(finalReward + "\n\n").withStyle(ChatFormatting.DARK_GREEN));
