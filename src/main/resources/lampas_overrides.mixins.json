@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "town.lampas.overrides.mixin",
-  "refmap": "lampas_overrides.refmap.json",
+
   "compatibilityLevel": "JAVA_21",
   "plugin": "town.lampas.overrides.mixin.LampasMixinPlugin",
   "mixins": [

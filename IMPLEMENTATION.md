@@ -197,7 +197,6 @@ Core mechanics are managed in [PlayerLadderHandler.java](file:///C:/Users/markj/
 ### 6.4 Mixin Hooks
 *   **[EntityMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/EntityMixin.java)**: 
     *   Intercepts `addPassenger` and `removePassenger` to broadcast a `ClientboundSetPassengersPacket` to the vehicle player. Includes connection null-safety guards.
-    *   Intercepts `startRiding` and bypasses the `canSerialize()` check if the vehicle is of type `PLAYER`, allowing players to be ridden.
 *   **[RideCommandMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/RideCommandMixin.java)**:
     *   Redirects target entity `getType()` inside the vanilla `/ride mount` command. Returning `null` bypasses passenger serializability checks, extending the `/ride` command to support players.
 *   **[ProjectileUtilMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/ProjectileUtilMixin.java)**:
