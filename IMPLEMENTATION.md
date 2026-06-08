@@ -184,8 +184,8 @@ Behavior is configured in [ModConfig.java](file:///C:/Users/markj/source/repos/l
 *   **`LADDER_RIDE_EXTENSION`**: Toggles the `/ride` command extension.
 
 ### 6.2 Toggle Commands
-*   **`/playerladder toggle`** or **`/ladder toggle`**: Toggles whether player ladder interactions are active for the executing player.
-*   **Persistence**: Toggled status is stored in the player's persistent NBT data (`PlayerLadder_DisableRiding`).
+*   **`/playerladder toggle`** or **`/ladder toggle`**: Toggles whether player ladder interactions are active for the executing player (opt-in by default, meaning all players must run this command to enable the feature for themselves).
+*   **Persistence**: Opted-in status is stored in the player's persistent NBT data (`PlayerLadder_EnableRiding`).
 *   **Safety Dismount**: Disabling interactions automatically dismounts any active passengers or vehicles currently attached to the player.
 
 ### 6.3 Event Hooks and Logic

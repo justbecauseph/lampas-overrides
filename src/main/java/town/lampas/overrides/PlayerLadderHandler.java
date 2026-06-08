@@ -28,7 +28,7 @@ public class PlayerLadderHandler {
     private static final Set<EntityType<?>> entityTypesToExclude = Sets.newHashSet();
     private static final Set<TagKey<EntityType<?>>> entityTagsToExclude = Sets.newHashSet();
 
-    private static final String NBT_KEY_DISABLE_RIDING = "PlayerLadder_DisableRiding";
+    private static final String NBT_KEY_ENABLE_RIDING = "PlayerLadder_EnableRiding";
 
     public static void onConfigEvent(final ModConfigEvent event) {
         if (event.getConfig().getSpec() == ModConfig.SPEC) {
@@ -37,13 +37,13 @@ public class PlayerLadderHandler {
     }
 
     public static boolean isRidingDisabledByPlayer(Player player) {
-        return player.getPersistentData().getBoolean(NBT_KEY_DISABLE_RIDING);
+        return !player.getPersistentData().getBoolean(NBT_KEY_ENABLE_RIDING);
     }
 
     public static void toggleRiding(ServerPlayer player) {
-        boolean currentValue = player.getPersistentData().getBoolean(NBT_KEY_DISABLE_RIDING);
-        player.getPersistentData().putBoolean(NBT_KEY_DISABLE_RIDING, !currentValue);
-        if (!currentValue) {
+        boolean currentValue = player.getPersistentData().getBoolean(NBT_KEY_ENABLE_RIDING);
+        player.getPersistentData().putBoolean(NBT_KEY_ENABLE_RIDING, !currentValue);
+        if (currentValue) {
             player.sendSystemMessage(Component.literal("Player Ladder interactions disabled for you.").withStyle(net.minecraft.ChatFormatting.RED));
             // Force dismount any passengers
             if (player.isVehicle()) {
