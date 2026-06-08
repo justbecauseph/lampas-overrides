@@ -16,7 +16,7 @@ public class LampasOverridesMod {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public LampasOverridesMod(ModContainer modContainer, IEventBus modEventBus) {
-        LOGGER.info("Lampas Overrides (Mixin Edition) initialized!");
+        LOGGER.info("Lampas Overrides (Mixin Edition) initialized! Trigger build.");
         
         // Register the common configuration (saved in config/lampas_overrides-common.toml)
         modContainer.registerConfig(ModConfig.Type.COMMON, town.lampas.overrides.ModConfig.SPEC);
