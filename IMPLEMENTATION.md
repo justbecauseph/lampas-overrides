@@ -52,7 +52,7 @@ Logins and logouts trigger async HTTP POST requests to `ModConfig.WEBHOOK_URL` c
 *   **Fishing Luck and Speed Passive Buffs (Fisheries only)**:
     *   While all players are allowed to use Fishing Rods, only `FISHERIES` faction members receive a passive boost to their fishing efficiency and quality.
     *   When casting a line, the generated `FishingHook` is intercepted via a mixin:
-        *   `lureSpeed` is increased by `200` ticks (equivalent to **+2 levels of Lure** / reducing bite wait time by 10 seconds).
+        *   `lureSpeed` is increased by `2` levels (equivalent to **+2 levels of Lure**, reducing bite wait time by 10 seconds / 200 ticks).
         *   `luck` is increased by `2` (equivalent to **+2 levels of Luck of the Sea**).
     *   These passive buffs fully stack with Lure and Luck of the Sea enchantments applied to the player's fishing rod.
     *   **Mother's Grace (Fisheries Boon) Effect**: Active fishing hooks apply a custom beneficial status effect called *Mother's Grace* (`lampas_overrides:fisheries_boon`) to the fishing player. To optimize performance, the mixin refreshes the effect with a 5-second duration only when it is missing or expiring within 1 second, avoiding tick-by-tick `addEffect` overhead.
