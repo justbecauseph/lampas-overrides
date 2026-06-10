@@ -36,8 +36,8 @@ public abstract class FishingHookMixin {
         if (!level.isClientSide && player != null) {
             Faction faction = PlayerActivityListener.getPlayerFaction(player.getUUID());
             if (faction == Faction.FISHERIES) {
-                // Boost fishing speed (+100 ticks = 5s faster bite time, equivalent to +1 level of Lure)
-                this.lureSpeed += 100;
+                // Boost fishing speed (+200 ticks = 10s faster bite time, equivalent to +2 levels of Lure)
+                this.lureSpeed += 200;
                 
                 // Boost fishing luck (+2 luck, equivalent to +2 levels of Luck of the Sea)
                 this.luck += 2;
