@@ -55,6 +55,7 @@ Logins and logouts trigger async HTTP POST requests to `ModConfig.WEBHOOK_URL` c
         *   `lureSpeed` is increased by `100` ticks (equivalent to **+1 level of Lure** / reducing bite wait time by 5 seconds).
         *   `luck` is increased by `2` (equivalent to **+2 levels of Luck of the Sea**).
     *   These passive buffs fully stack with Lure and Luck of the Sea enchantments applied to the player's fishing rod.
+    *   **Mother's Grace (Fisheries Boon) Effect**: Active fishing hooks apply a custom beneficial status effect called *Mother's Grace* (`lampas_overrides:fisheries_boon`) to the fishing player. To optimize performance, the mixin refreshes the effect with a 5-second duration only when it is missing or expiring within 1 second, avoiding tick-by-tick `addEffect` overhead.
 *   **Source References**:
     *   Blocks: [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java#L144-L156) & [CraftingMenuMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/CraftingMenuMixin.java#L87-L93)
     *   Fishing Rod Buffs: [FishingHookMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/FishingHookMixin.java)

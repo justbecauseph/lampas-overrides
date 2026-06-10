@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v1.0.49] - 2026-06-08
+
+### Added / Changed
+- feat: change Player Ladder system default state to opt-in (disabled by default)
+
+## [v1.0.48] - 2026-06-08
 
 ### Added / Changed
 - fix: remove unnecessary canSerialize wrap operation from EntityMixin to resolve server startup crash on NeoForge
