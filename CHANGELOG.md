@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added / Changed
+- fix: correct lureSpeed increment to represent levels (+2) instead of ticks (+200) and update docs
 - feat: increase lure speed bonus to 10s and update docs
 
 ## [v1.0.50] - 2026-06-11
