@@ -5,10 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v1.0.52] - 2026-06-11
 
 ### Added / Changed
+- fix: correct lureSpeed increment to +10 representing 10 seconds of reduction and update docs
 - fix: correct lureSpeed increment to represent levels (+2) instead of ticks (+200) and update docs
+
+## [v1.0.51] - 2026-06-11
+
+### Added / Changed
 - feat: increase lure speed bonus to 10s and update docs
 
 ## [v1.0.50] - 2026-06-11
