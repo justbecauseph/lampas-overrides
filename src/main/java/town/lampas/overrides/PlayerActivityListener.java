@@ -271,24 +271,74 @@ public class PlayerActivityListener {
                 if (player.hasEffect(ModEffects.TOTEM_EFFECT)) {
                     event.setCanceled(true);
                     player.removeEffect(ModEffects.TOTEM_EFFECT);
-                    
+
                     // Clear all potion/mob effects
                     player.removeAllEffects();
-                    
+
                     // Set health to 1.0F (half a heart)
                     player.setHealth(1.0F);
-                    
+
                     // Apply vanilla totem of undying effects: Regeneration II (900 ticks), Absorption II (100 ticks), Fire Resistance I (800 ticks)
                     player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 900, 1));
                     player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.ABSORPTION, 100, 1));
                     player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, 800, 0));
-                    
+
                     // Broadcast entity event status 35 (Totem of Undying use animation and sound)
                     player.level().broadcastEntityEvent(player, (byte) 35);
-                    
+
                     player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Your Eldritch blessing saved you from death!").withStyle(ChatFormatting.GOLD));
+                    return;
                 }
+
+                // Player actually died (not saved by an Eldritch blessing).
+                // Notify the portal so it can alert the RELIGION faction ("The Faith").
+                String deathMessage = event.getSource().getLocalizedDeathMessage(player).getString();
+                sendPlayerDeathAsync(player.getUUID().toString(), player.getName().getString(), deathMessage);
             }
+        }
+    }
+
+    private void sendPlayerDeathAsync(String uuid, String username, String deathMessage) {
+        String url = ModConfig.PLAYER_DEATH_API_URL.get();
+        String apiKey = ModConfig.API_KEY.get();
+
+        if (url == null || url.isBlank()) {
+            LOGGER.warn("Player death API URL is not configured. Skipping death notification.");
+            return;
+        }
+
+        com.google.gson.JsonObject jsonObject = new com.google.gson.JsonObject();
+        jsonObject.addProperty("uuid", uuid);
+        jsonObject.addProperty("username", username);
+        if (deathMessage != null && !deathMessage.isBlank()) {
+            jsonObject.addProperty("deathMessage", deathMessage);
+        }
+
+        String json = jsonObject.toString();
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Content-Type", "application/json")
+                    .header("x-api-key", apiKey)
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+
+            HttpUtil.HTTP_CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenAccept(response -> {
+                        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                            LOGGER.info("Successfully notified portal of {}'s death.", username);
+                        } else {
+                            LOGGER.error("Failed to notify portal of {}'s death. Status code: {}, Response: {}",
+                                    username, response.statusCode(), response.body());
+                        }
+                    })
+                    .exceptionally(ex -> {
+                        LOGGER.error("Error sending death notification for player {}: {}", username, ex.getMessage(), ex);
+                        return null;
+                    });
+        } catch (Exception e) {
+            LOGGER.error("Failed to build HTTP request for player death event: {}", e.getMessage(), e);
         }
     }
 

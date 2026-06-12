@@ -12,6 +12,7 @@ public class ModConfig {
     public static final ModConfigSpec.ConfigValue<String> BANK_SYNC_URL;
     public static final ModConfigSpec.ConfigValue<String> PLAYER_API_URL;
     public static final ModConfigSpec.ConfigValue<String> BOUNTIES_API_URL;
+    public static final ModConfigSpec.ConfigValue<String> PLAYER_DEATH_API_URL;
 
     public static final ModConfigSpec.ConfigValue<Boolean> TAX_COLLECTOR_FORCE_ACCEPTANCE;
 
@@ -39,6 +40,9 @@ public class ModConfig {
 
         BOUNTIES_API_URL = BUILDER.comment("The full URL of the bounties API endpoint to retrieve and claim bounties.")
                 .define("bountiesApiUrl", "http://localhost:3000/api/minecraft/bounties");
+
+        PLAYER_DEATH_API_URL = BUILDER.comment("The full URL of the player death API endpoint to notify when a player dies.")
+                .define("playerDeathApiUrl", "http://localhost:3000/api/minecraft/player-death");
 
         TAX_COLLECTOR_FORCE_ACCEPTANCE = BUILDER.comment("Whether newly created Tax Collectors will default to Force Acceptance being enabled.")
                 .define("taxCollectorForceAcceptance", true);
