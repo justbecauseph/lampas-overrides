@@ -10,6 +10,9 @@ public enum Faction {
     NOBILITY("NOBILITY"),
     NONE("");
 
+    // Cached to avoid the defensive array clone that values() performs on every call.
+    private static final Faction[] VALUES = values();
+
     private final String apiValue;
 
     Faction(String apiValue) {
@@ -24,7 +27,7 @@ public enum Faction {
         if (name == null) return NONE;
         String trimmed = name.trim().toUpperCase();
 
-        for (Faction f : values()) {
+        for (Faction f : VALUES) {
             if (f.name().equals(trimmed)) {
                 return f;
             }

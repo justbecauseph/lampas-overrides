@@ -18,7 +18,10 @@ public final class ProjectileUtilMixin {
         argsOnly = true
     )
     private static Predicate<Entity> playerladder$filterPassengers(Predicate<Entity> predicate, Entity shooter) {
-        if (ModConfig.LADDER_ALLOW_INTERACTIONS.get()) {
+        // getEntityHitResult runs for every projectile every tick and for melee reach checks.
+        // The passenger filter only matters when the shooter is actually carrying a passenger,
+        // so skip the capturing-lambda allocation in the (overwhelmingly common) empty case.
+        if (ModConfig.LADDER_ALLOW_INTERACTIONS.get() && shooter != null && shooter.isVehicle()) {
             return entity -> predicate.test(entity) && !playerladder$isPassengerRecursive(shooter, entity);
         }
         return predicate;

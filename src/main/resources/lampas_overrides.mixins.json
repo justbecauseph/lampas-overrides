@@ -22,7 +22,8 @@
   ],
   "client": [
     "FormattedStringEditorMixin",
-    "ProjectileUtilMixin"
+    "ProjectileUtilMixin",
+    "ClientPacketListenerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

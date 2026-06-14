@@ -25,6 +25,12 @@ public class ChatSocialDecorator {
     private static final ResourceLocation ICON_FONT =
             ResourceLocation.fromNamespaceAndPath(LampasOverridesMod.MODID, "social_icons");
 
+    // Joins are warmed instantly by ClientPacketListenerMixin; this throttled roster sweep is a
+    // backstop (catches any missed entries / TTL refreshes) and drives cache eviction. Throttled
+    // because the roster changes slowly. SocialCache.get(sender) still refreshes the sender.
+    private static final long PREFETCH_INTERVAL_MS = 10_000L;
+    private long lastPrefetch = 0L;
+
     // Private-use codepoints mapped to the bitmap glyphs in assets/.../font/social_icons.json
     private static final String YOUTUBE_GLYPH = "";
     private static final String TWITCH_GLYPH = "";
@@ -36,7 +42,7 @@ public class ChatSocialDecorator {
         UUID sender = event.getSender();
         if (sender == null || event.isSystem()) return;
 
-        // Warm the cache for everyone currently online so a player's first message decorates too.
+        // Backstop sweep + cache eviction (joins are warmed eagerly by ClientPacketListenerMixin).
         prefetchOnlinePlayers();
 
         SocialCache.Socials socials = SocialCache.get(sender);
@@ -70,13 +76,19 @@ public class ChatSocialDecorator {
         return Component.literal(glyph).setStyle(style);
     }
 
-    private static void prefetchOnlinePlayers() {
+    private void prefetchOnlinePlayers() {
+        long now = System.currentTimeMillis();
+        if (now - lastPrefetch < PREFETCH_INTERVAL_MS) return;
+        lastPrefetch = now;
+
         Minecraft mc = Minecraft.getInstance();
         if (mc.getConnection() == null) return;
         List<UUID> ids = new ArrayList<>();
         mc.getConnection().getOnlinePlayers().forEach(info -> ids.add(info.getProfile().getId()));
         if (!ids.isEmpty()) {
             SocialCache.prefetch(ids);
+            // Bound the cache to the current roster; offline players are dropped.
+            SocialCache.retainOnly(ids);
         }
     }
 }

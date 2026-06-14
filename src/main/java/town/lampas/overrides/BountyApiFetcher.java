@@ -21,8 +21,12 @@ public class BountyApiFetcher {
 
     public record Bounty(UUID id, String title, String description, String prizeType, int prizeAmount, String prizeItem, String prizeOther, String poster, java.util.Set<String> claims) {
         public boolean isClaimedBy(UUID playerUuid) {
-            String playerUuidStr = playerUuid.toString().toLowerCase().replace("-", "");
-            return claims.contains(playerUuidStr);
+            return isClaimedBy(normalizeUuid(playerUuid));
+        }
+
+        /** Variant taking a pre-normalized UUID string, to avoid recomputing it in tight loops. */
+        public boolean isClaimedBy(String normalizedUuid) {
+            return claims.contains(normalizedUuid);
         }
 
         public String getRewardText() {
@@ -39,6 +43,11 @@ public class BountyApiFetcher {
                 return prizeAmount + " " + prizeType;
             }
         }
+    }
+
+    /** Lowercase, dash-stripped form matching how claim UUIDs are stored. */
+    public static String normalizeUuid(UUID uuid) {
+        return uuid.toString().toLowerCase().replace("-", "");
     }
 
     private static volatile List<Bounty> cachedBounties = java.util.Collections.emptyList();

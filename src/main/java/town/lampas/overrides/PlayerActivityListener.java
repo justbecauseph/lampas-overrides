@@ -449,6 +449,9 @@ public class PlayerActivityListener {
         welcome.append(Component.literal("Available today: " + bounties.size()).withStyle(ChatFormatting.DARK_BLUE));
         pages.add(Filterable.passThrough(welcome));
 
+        // Normalize the viewer's UUID once instead of per-bounty inside the loop.
+        String normalizedViewer = BountyApiFetcher.normalizeUuid(player.getUUID());
+
         // Add a page for each bounty
         for (BountyApiFetcher.Bounty bounty : bounties) {
             int maxLines = 14;
@@ -490,7 +493,7 @@ public class PlayerActivityListener {
             page.append(Component.literal("Reward: ").withStyle(ChatFormatting.DARK_GRAY));
             page.append(Component.literal(finalReward + "\n\n").withStyle(ChatFormatting.DARK_GREEN));
 
-            if (bounty.isClaimedBy(player.getUUID())) {
+            if (bounty.isClaimedBy(normalizedViewer)) {
                 page.append(Component.literal("[ ALREADY CLAIMED ]").withStyle(ChatFormatting.RED));
             } else {
                 page.append(Component.literal("[ ACCEPT CONTRACT ]")

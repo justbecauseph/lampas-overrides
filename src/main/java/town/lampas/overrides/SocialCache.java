@@ -53,6 +53,17 @@ public final class SocialCache {
         return (s == null || s.isEmpty()) ? null : s;
     }
 
+    /**
+     * Drops cached entries for players no longer in {@code keep} (e.g. those who logged out),
+     * so the maps stay bounded to the current roster over a long-lived client session.
+     */
+    public static void retainOnly(Collection<UUID> keep) {
+        Set<UUID> online = keep instanceof Set<UUID> set ? set : new java.util.HashSet<>(keep);
+        CACHE.keySet().retainAll(online);
+        LAST_FETCH.keySet().retainAll(online);
+        // IN_FLIGHT entries clear themselves when their request completes.
+    }
+
     /** Batch-warms the cache for a set of UUIDs, deduped by TTL and an in-flight guard. */
     public static void prefetch(Collection<UUID> uuids) {
         if (!ModConfig.SHOW_SOCIAL_ICONS.get()) return;
