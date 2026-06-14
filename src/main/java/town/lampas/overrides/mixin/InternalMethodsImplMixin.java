@@ -27,6 +27,21 @@ public class InternalMethodsImplMixin {
         if (context.getEntity() instanceof Player player) {
             if (!player.level().isClientSide && !player.hasPermissions(2)) {
                 ResourceLocation targetType = context.getTargetWaystone().getWaystoneType();
+                ResourceLocation fromType = context.getFromWaystone()
+                    .map(from -> from.getWaystoneType())
+                    .orElse(null);
+                boolean targetIsBlack = targetType != null
+                    && targetType.getNamespace().equals("waystones")
+                    && targetType.getPath().equals("black_sharestone");
+                boolean fromIsBlack = fromType != null
+                    && fromType.getNamespace().equals("waystones")
+                    && fromType.getPath().equals("black_sharestone");
+                if (targetIsBlack || fromIsBlack) {
+                    cir.setReturnValue(new RefuseRequirement(
+                        Component.literal("You do not have permission to use the Black Sharestone.")
+                    ));
+                    return;
+                }
                 if (targetType != null && targetType.getNamespace().equals("waystones")) {
                     Faction requiredFaction = PlayerActivityListener.getRequiredFactionForSharestone(targetType.getPath());
                     if (requiredFaction != Faction.NONE) {
