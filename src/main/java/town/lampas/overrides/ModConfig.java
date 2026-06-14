@@ -13,6 +13,9 @@ public class ModConfig {
     public static final ModConfigSpec.ConfigValue<String> PLAYER_API_URL;
     public static final ModConfigSpec.ConfigValue<String> BOUNTIES_API_URL;
     public static final ModConfigSpec.ConfigValue<String> PLAYER_DEATH_API_URL;
+    public static final ModConfigSpec.ConfigValue<String> SOCIALS_API_URL;
+
+    public static final ModConfigSpec.BooleanValue SHOW_SOCIAL_ICONS;
 
     public static final ModConfigSpec.ConfigValue<Boolean> TAX_COLLECTOR_FORCE_ACCEPTANCE;
 
@@ -43,6 +46,12 @@ public class ModConfig {
 
         PLAYER_DEATH_API_URL = BUILDER.comment("The full URL of the player death API endpoint to notify when a player dies.")
                 .define("playerDeathApiUrl", "http://localhost:3000/api/minecraft/player-death");
+
+        SOCIALS_API_URL = BUILDER.comment("The full URL of the socials API endpoint used to fetch players' linked YouTube/Twitch channels for chat icons.")
+                .define("socialsApiUrl", "http://localhost:3000/api/minecraft/socials");
+
+        SHOW_SOCIAL_ICONS = BUILDER.comment("Whether to prepend YouTube/Twitch icons to chat messages from players who have linked a channel. Client-side only.")
+                .define("showSocialIcons", true);
 
         TAX_COLLECTOR_FORCE_ACCEPTANCE = BUILDER.comment("Whether newly created Tax Collectors will default to Force Acceptance being enabled.")
                 .define("taxCollectorForceAcceptance", true);

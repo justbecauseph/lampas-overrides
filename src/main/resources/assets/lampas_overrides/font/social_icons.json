@@ -1,0 +1,18 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "lampas_overrides:font/youtube.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [""]
+    },
+    {
+      "type": "bitmap",
+      "file": "lampas_overrides:font/twitch.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [""]
+    }
+  ]
+}

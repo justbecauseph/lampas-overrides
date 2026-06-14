@@ -1,7 +1,9 @@
 package town.lampas.overrides;
 
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.bus.api.IEventBus;
@@ -36,6 +38,12 @@ public class LampasOverridesMod {
         
         // Register PlayerLadderHandler to the global game event bus
         NeoForge.EVENT_BUS.register(new PlayerLadderHandler());
+
+        // Client-only: prepend YouTube/Twitch chat icons. Gated on the client dist so the
+        // client-only ChatSocialDecorator class never loads on a dedicated server.
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            NeoForge.EVENT_BUS.register(new ChatSocialDecorator());
+        }
     }
 
     private void addCreativeContents(BuildCreativeModeTabContentsEvent event) {
