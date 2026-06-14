@@ -39,6 +39,9 @@ public class LampasOverridesMod {
         // Register PlayerLadderHandler to the global game event bus
         NeoForge.EVENT_BUS.register(new PlayerLadderHandler());
 
+        // Register the /live toggle handler ([LIVE] chat/tab prefix, persisted in player NBT)
+        NeoForge.EVENT_BUS.register(new LiveStatusHandler());
+
         // Client-only: prepend YouTube/Twitch chat icons. Gated on the client dist so the
         // client-only ChatSocialDecorator class never loads on a dedicated server.
         if (FMLEnvironment.dist == Dist.CLIENT) {
