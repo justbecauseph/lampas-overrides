@@ -47,8 +47,8 @@ public class ModConfig {
         PLAYER_DEATH_API_URL = BUILDER.comment("The full URL of the player death API endpoint to notify when a player dies.")
                 .define("playerDeathApiUrl", "http://localhost:3000/api/minecraft/player-death");
 
-        SOCIALS_API_URL = BUILDER.comment("The full URL of the socials API endpoint used to fetch players' linked YouTube/Twitch channels for chat icons.")
-                .define("socialsApiUrl", "http://localhost:3000/api/minecraft/socials");
+        SOCIALS_API_URL = BUILDER.comment("The full URL of the socials API endpoint used to fetch players' linked YouTube/Twitch channels for chat icons. This is a public endpoint (no API key needed), so the default points at the live web app for client modpacks.")
+                .define("socialsApiUrl", "https://portal.lampas.town/api/minecraft/socials");
 
         SHOW_SOCIAL_ICONS = BUILDER.comment("Whether to prepend YouTube/Twitch icons to chat messages from players who have linked a channel. Client-side only.")
                 .define("showSocialIcons", true);
