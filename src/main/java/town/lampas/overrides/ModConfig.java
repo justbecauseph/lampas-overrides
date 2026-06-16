@@ -55,7 +55,7 @@ public class ModConfig {
         SHOW_SOCIAL_ICONS = BUILDER.comment("Whether to prepend YouTube/Twitch icons to chat messages from players who have linked a channel. Client-side only.")
                 .define("showSocialIcons", true);
 
-        PLAGUE_MODE = BUILDER.comment("If true, Cheesy/Lactose Intolerant are replaced with Plague/Infected. Does not retroactively migrate already-applied effects.")
+        PLAGUE_MODE = BUILDER.comment("If true, Cheesy/Lactose Intolerant are replaced with Plague/Infected. Toggle in-game with /plaguemode to migrate already-applied effects on online players live; editing this value directly only affects newly-applied effects.")
                 .define("plagueMode", false);
 
         TAX_COLLECTOR_FORCE_ACCEPTANCE = BUILDER.comment("Whether newly created Tax Collectors will default to Force Acceptance being enabled.")

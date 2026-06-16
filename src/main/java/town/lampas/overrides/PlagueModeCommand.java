@@ -28,6 +28,9 @@ public class PlagueModeCommand {
     private static int apply(CommandSourceStack source, boolean enabled) {
         ModConfig.PLAGUE_MODE.set(enabled);
         ModConfig.PLAGUE_MODE.save();
+        if (source.getServer() != null) {
+            CarrierStatus.migrateAppliedEffects(source.getServer());
+        }
         source.sendSuccess(() -> Component.literal("Plague mode is now ")
                 .append(enabled
                         ? Component.literal("ON").withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
