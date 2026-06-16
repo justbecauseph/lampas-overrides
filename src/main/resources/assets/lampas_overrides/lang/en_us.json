@@ -2,5 +2,9 @@
   "item.lampas_overrides.book_of_eldritch": "The Book of Eldritch",
   "item.lampas_overrides.eldritch_stone": "Eldritch Stone",
   "effect.lampas_overrides.totem_of_undying": "The Faith's Blessing",
-  "effect.lampas_overrides.fisheries_boon": "Mother's Grace"
+  "effect.lampas_overrides.fisheries_boon": "Mother's Grace",
+  "effect.lampas_overrides.cheesy": "Cheesy",
+  "effect.lampas_overrides.plague": "Plague",
+  "effect.lampas_overrides.lactose_intolerant": "Lactose Intolerant",
+  "effect.lampas_overrides.infected": "Infected"
 }

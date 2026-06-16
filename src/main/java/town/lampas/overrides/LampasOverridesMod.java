@@ -42,6 +42,12 @@ public class LampasOverridesMod {
         // Register the /live toggle handler ([LIVE] chat/tab prefix, persisted in player NBT)
         NeoForge.EVENT_BUS.register(new LiveStatusHandler());
 
+        // Register the Cheesy/Plague contact-detection handler to the global game event bus
+        NeoForge.EVENT_BUS.register(new CheesyContactHandler());
+
+        // Register the /plaguemode admin toggle command
+        NeoForge.EVENT_BUS.register(new PlagueModeCommand());
+
         // Client-only: prepend YouTube/Twitch chat icons. Gated on the client dist so the
         // client-only ChatSocialDecorator class never loads on a dedicated server.
         if (FMLEnvironment.dist == Dist.CLIENT) {

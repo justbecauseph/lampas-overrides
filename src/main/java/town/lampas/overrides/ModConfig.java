@@ -17,6 +17,8 @@ public class ModConfig {
 
     public static final ModConfigSpec.BooleanValue SHOW_SOCIAL_ICONS;
 
+    public static final ModConfigSpec.BooleanValue PLAGUE_MODE;
+
     public static final ModConfigSpec.ConfigValue<Boolean> TAX_COLLECTOR_FORCE_ACCEPTANCE;
 
     public static final ModConfigSpec.EnumValue<ClickMode> LADDER_MODE;
@@ -52,6 +54,9 @@ public class ModConfig {
 
         SHOW_SOCIAL_ICONS = BUILDER.comment("Whether to prepend YouTube/Twitch icons to chat messages from players who have linked a channel. Client-side only.")
                 .define("showSocialIcons", true);
+
+        PLAGUE_MODE = BUILDER.comment("If true, Cheesy/Lactose Intolerant are replaced with Plague/Infected. Does not retroactively migrate already-applied effects.")
+                .define("plagueMode", false);
 
         TAX_COLLECTOR_FORCE_ACCEPTANCE = BUILDER.comment("Whether newly created Tax Collectors will default to Force Acceptance being enabled.")
                 .define("taxCollectorForceAcceptance", true);

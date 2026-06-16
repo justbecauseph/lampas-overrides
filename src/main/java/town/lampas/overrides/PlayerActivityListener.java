@@ -35,6 +35,7 @@ public class PlayerActivityListener {
     private static final java.util.Map<java.util.UUID, Faction> PLAYER_FACTIONS = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Map<java.util.UUID, Long> LAST_FETCH_TIME = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Map<java.util.UUID, BlockPos> LAST_BOUNTY_BOARD_POS = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Map<java.util.UUID, Boolean> PLAYER_IS_RAT = new java.util.concurrent.ConcurrentHashMap<>();
     public static final ThreadLocal<Boolean> IS_MERGING_INVENTORY = ThreadLocal.withInitial(() -> false);
 
     public static Faction getPlayerFaction(java.util.UUID uuid) {
@@ -70,6 +71,7 @@ public class PlayerActivityListener {
         PLAYER_FACTIONS.remove(player.getUUID());
         LAST_FETCH_TIME.remove(player.getUUID());
         LAST_BOUNTY_BOARD_POS.remove(player.getUUID());
+        PLAYER_IS_RAT.remove(player.getUUID());
     }
 
     private void sendWebhookAsync(String uuid, String username, String eventType) {
@@ -228,12 +230,16 @@ public class PlayerActivityListener {
                                     faction = Faction.fromString(factionStr);
                                 }
                                 final Faction finalFaction = faction;
+                                final boolean finalIsRat = json.has("isRat") && !json.get("isRat").isJsonNull() && json.get("isRat").getAsBoolean();
                                 net.minecraft.server.MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
                                 if (server != null) {
                                     server.execute(() -> {
-                                        if (server.getPlayerList().getPlayer(uuid) != null) {
+                                        net.minecraft.server.level.ServerPlayer onlinePlayer = server.getPlayerList().getPlayer(uuid);
+                                        if (onlinePlayer != null) {
                                             PLAYER_FACTIONS.put(uuid, finalFaction);
-                                            LOGGER.info("Fetched faction for player UUID {}: {}", uuid, finalFaction);
+                                            Boolean previousIsRat = PLAYER_IS_RAT.put(uuid, finalIsRat);
+                                            applyOrRemoveCarrierStatus(onlinePlayer, previousIsRat, finalIsRat);
+                                            LOGGER.info("Fetched faction for player UUID {}: {} (isRat={})", uuid, finalFaction, finalIsRat);
                                         } else {
                                             LOGGER.info("Discarded fetched faction for player UUID {} because they are no longer online.", uuid);
                                         }
@@ -262,6 +268,16 @@ public class PlayerActivityListener {
             return null;
         }
         return playerApiUrl + "?uuid=" + playerUuid;
+    }
+
+    private static void applyOrRemoveCarrierStatus(net.minecraft.server.level.ServerPlayer player, Boolean previousIsRat, boolean newIsRat) {
+        boolean wasRat = previousIsRat != null && previousIsRat;
+        if (newIsRat && !wasRat) {
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(CarrierStatus.getCarrierEffect(), Integer.MAX_VALUE, 0, false, false, true));
+        } else if (!newIsRat && wasRat) {
+            player.removeEffect(ModEffects.CHEESY);
+            player.removeEffect(ModEffects.PLAGUE);
+        }
     }
 
     @SubscribeEvent
