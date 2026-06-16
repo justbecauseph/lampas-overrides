@@ -18,11 +18,11 @@
     "FishingHookMixin",
     "InternalMethodsImplMixin",
     "EntityMixin",
-    "RideCommandMixin"
+    "RideCommandMixin",
+    "ProjectileUtilMixin"
   ],
   "client": [
     "FormattedStringEditorMixin",
-    "ProjectileUtilMixin",
     "ClientPacketListenerMixin"
   ],
   "injectors": {

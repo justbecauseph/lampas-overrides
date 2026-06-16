@@ -25,6 +25,9 @@ public class LampasMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.contains("Bounty") || mixinClassName.contains("ContractItem")) {
             return LoadingModList.get().getModFileById("wildernature") != null;
         }
+        if (mixinClassName.contains("MerchantOfferMixin")) {
+            return LoadingModList.get().getModFileById("lightmanscurrency") != null;
+        }
         return true;
     }
 

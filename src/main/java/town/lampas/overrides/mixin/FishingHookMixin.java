@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import town.lampas.overrides.Faction;
 import town.lampas.overrides.ModEffects;
@@ -31,11 +32,15 @@ public abstract class FishingHookMixin {
     @Shadow
     public abstract Player getPlayerOwner();
 
+    @Unique
+    private boolean lampasOverrides$isFisheriesOwner;
+
     @Inject(method = "<init>(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;II)V", at = @At("RETURN"))
     private void onInit(Player player, Level level, int luck, int lureSpeed, CallbackInfo ci) {
         if (!level.isClientSide && player != null) {
             Faction faction = PlayerActivityListener.getPlayerFaction(player.getUUID());
             if (faction == Faction.FISHERIES) {
+                this.lampasOverrides$isFisheriesOwner = true;
                 this.lureSpeed += 20;
                 
                 // Boost fishing luck (+2 luck, equivalent to +2 levels of Luck of the Sea)
@@ -47,22 +52,19 @@ public abstract class FishingHookMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         FishingHook hook = (FishingHook) (Object) this;
-        if (!hook.level().isClientSide) {
+        if (!hook.level().isClientSide && this.lampasOverrides$isFisheriesOwner) {
             Player player = this.getPlayerOwner();
             if (player != null) {
-                Faction faction = PlayerActivityListener.getPlayerFaction(player.getUUID());
-                if (faction == Faction.FISHERIES) {
-                    MobEffectInstance activeBoon = player.getEffect(ModEffects.FISHERIES_BOON);
-                    if (activeBoon == null || activeBoon.getDuration() <= 20) {
-                        player.addEffect(new MobEffectInstance(
-                                ModEffects.FISHERIES_BOON,
-                                100, // 100 ticks = 5s duration
-                                0,  // amplifier
-                                true, // ambient
-                                false, // visibleParticles
-                                true   // showIcon
-                        ));
-                    }
+                MobEffectInstance activeBoon = player.getEffect(ModEffects.FISHERIES_BOON);
+                if (activeBoon == null || activeBoon.getDuration() <= 20) {
+                    player.addEffect(new MobEffectInstance(
+                            ModEffects.FISHERIES_BOON,
+                            100, // 100 ticks = 5s duration
+                            0,  // amplifier
+                            true, // ambient
+                            false, // visibleParticles
+                            true   // showIcon
+                    ));
                 }
             }
         }
