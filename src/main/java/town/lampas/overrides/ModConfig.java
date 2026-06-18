@@ -14,8 +14,10 @@ public class ModConfig {
     public static final ModConfigSpec.ConfigValue<String> BOUNTIES_API_URL;
     public static final ModConfigSpec.ConfigValue<String> PLAYER_DEATH_API_URL;
     public static final ModConfigSpec.ConfigValue<String> SOCIALS_API_URL;
+    public static final ModConfigSpec.ConfigValue<String> PRONOUNDB_API_URL;
 
     public static final ModConfigSpec.BooleanValue SHOW_SOCIAL_ICONS;
+    public static final ModConfigSpec.BooleanValue SHOW_PRONOUNS;
 
     public static final ModConfigSpec.BooleanValue PLAGUE_MODE;
 
@@ -54,6 +56,12 @@ public class ModConfig {
 
         SHOW_SOCIAL_ICONS = BUILDER.comment("Whether to prepend YouTube/Twitch icons to chat messages from players who have linked a channel. Client-side only.")
                 .define("showSocialIcons", true);
+
+        PRONOUNDB_API_URL = BUILDER.comment("The PronounDB v2 lookup endpoint used to fetch players' pronouns by Minecraft UUID. Public endpoint (no API key needed).")
+                .define("pronounDbApiUrl", "https://pronoundb.org/api/v2/lookup");
+
+        SHOW_PRONOUNS = BUILDER.comment("Whether to prepend each player's PronounDB pronouns (e.g. [he/him]) to their display name in chat, the tab list, nametags and Jade. Server-side; applies to everyone, no client mod needed.")
+                .define("showPronouns", true);
 
         PLAGUE_MODE = BUILDER.comment("If true, Cheesy/Lactose Intolerant are replaced with Plague/Infected. Toggle in-game with /plaguemode to migrate already-applied effects on online players live; editing this value directly only affects newly-applied effects.")
                 .define("plagueMode", false);

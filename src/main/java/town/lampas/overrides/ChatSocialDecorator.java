@@ -18,8 +18,8 @@ import java.util.UUID;
 /**
  * Client-only listener that prepends a clickable YouTube/Twitch icon to chat messages from
  * players who have self-linked a channel. Uses NeoForge's {@link ClientChatReceivedEvent.Player}
- * (a layer below PronounMC's {@code ChatListener} mixin) so the two decorations coexist with
- * no mixin conflict — the icon sits just before the message text.
+ * event so the icon sits just before the message text. Pronouns are handled separately, server-side,
+ * in {@link PronounStatusHandler}.
  */
 public class ChatSocialDecorator {
     private static final ResourceLocation ICON_FONT =

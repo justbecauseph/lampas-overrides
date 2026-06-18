@@ -39,6 +39,10 @@ public class LampasOverridesMod {
         // Register PlayerLadderHandler to the global game event bus
         NeoForge.EVENT_BUS.register(new PlayerLadderHandler());
 
+        // Prepend PronounDB pronouns ([he/him]) to player names. Registered before LiveStatusHandler
+        // so the [LIVE] tag ends up outermost: [LIVE] [he/him] Name.
+        NeoForge.EVENT_BUS.register(new PronounStatusHandler());
+
         // Register the /live toggle handler ([LIVE] chat/tab prefix, persisted in player NBT)
         NeoForge.EVENT_BUS.register(new LiveStatusHandler());
 
