@@ -28,6 +28,9 @@ public class LampasMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.contains("MerchantOfferMixin")) {
             return LoadingModList.get().getModFileById("lightmanscurrency") != null;
         }
+        if (mixinClassName.contains("JadeObjectNameProviderMixin")) {
+            return LoadingModList.get().getModFileById("jade") != null;
+        }
         return true;
     }
 
