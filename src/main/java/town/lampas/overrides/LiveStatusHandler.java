@@ -10,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import town.lampas.overrides.mixin.PlayerDisplayNameAccessor;
 
 /**
  * Server-side "live" toggle. Players run {@code /live toggle} (or {@code /live on|off}) to mark
@@ -41,7 +42,13 @@ public class LiveStatusHandler {
 
     /** Re-broadcasts the player's name to clients so the [LIVE] prefix appears/disappears immediately. */
     private static void refreshNames(ServerPlayer player) {
-        player.refreshDisplayName();   // affects chat sender name
+        // Invalidate NeoForge's cached display name instead of calling refreshDisplayName():
+        // refreshDisplayName() re-fires NameFormat with the raw getName(), which bypasses mods
+        // (e.g. eclipsescustomname) that inject their name by wrapping getName() *inside*
+        // getDisplayName(), wiping the player's custom name. Nulling the cache forces a lazy
+        // recompute through getDisplayName(), where those mods participate again — and where our
+        // own onNameFormat handler still gets to prepend [LIVE].
+        ((PlayerDisplayNameAccessor) player).lampas$setDisplayName(null);
         player.refreshTabListName();   // broadcasts UPDATE_DISPLAY_NAME to all clients
     }
 

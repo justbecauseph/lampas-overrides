@@ -19,7 +19,8 @@
     "InternalMethodsImplMixin",
     "EntityMixin",
     "RideCommandMixin",
-    "ProjectileUtilMixin"
+    "ProjectileUtilMixin",
+    "PlayerDisplayNameAccessor"
   ],
   "client": [
     "FormattedStringEditorMixin",
