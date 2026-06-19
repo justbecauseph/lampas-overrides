@@ -22,6 +22,7 @@ public class ModConfig {
     public static final ModConfigSpec.BooleanValue PLAGUE_MODE;
 
     public static final ModConfigSpec.ConfigValue<Boolean> TAX_COLLECTOR_FORCE_ACCEPTANCE;
+    public static final ModConfigSpec.BooleanValue TAX_COLLECTOR_MINIMUM_TAX;
 
     public static final ModConfigSpec.EnumValue<ClickMode> LADDER_MODE;
     public static final ModConfigSpec.IntValue LADDER_PICK_UP_LIMIT;
@@ -68,6 +69,8 @@ public class ModConfig {
 
         TAX_COLLECTOR_FORCE_ACCEPTANCE = BUILDER.comment("Whether newly created Tax Collectors will default to Force Acceptance being enabled.")
                 .define("taxCollectorForceAcceptance", true);
+        TAX_COLLECTOR_MINIMUM_TAX = BUILDER.comment("If true, any taxed trade collects at least the smallest coin (1 Aur) instead of rounding down to nothing. Prevents low-value trades (e.g. a 5% tax on a 5 Aur trade) from being taxed zero.")
+                .define("taxCollectorMinimumTax", true);
         BUILDER.pop();
 
         BUILDER.push("Player Ladder Settings");
