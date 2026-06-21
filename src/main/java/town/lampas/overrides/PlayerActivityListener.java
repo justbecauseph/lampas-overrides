@@ -433,7 +433,13 @@ public class PlayerActivityListener {
                             for (String line : wrappedDesc) {
                                 lore.add(net.minecraft.network.chat.Component.literal(line).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
                             }
+                            lore.add(net.minecraft.network.chat.Component.literal("From: " + finalTarget.poster()).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+                            String factionName = finalTarget.getFactionDisplayName();
+                            if (factionName != null) {
+                                lore.add(net.minecraft.network.chat.Component.literal("Faction: " + factionName).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+                            }
                             lore.add(net.minecraft.network.chat.Component.literal("Reward: " + finalTarget.getRewardText()).withStyle(ChatFormatting.DARK_GREEN));
+                            lore.add(net.minecraft.network.chat.Component.literal("Claimed by: " + player.getName().getString()).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
                             contract.set(net.minecraft.core.component.DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(lore));
                             
                             if (!player.getInventory().add(contract)) {

@@ -19,9 +19,27 @@ import com.mojang.logging.LogUtils;
 public class BountyApiFetcher {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public record Bounty(UUID id, String title, String description, String prizeType, int prizeAmount, String prizeItem, String prizeOther, String poster, java.util.Set<String> claims) {
+    public record Bounty(UUID id, String title, String description, String prizeType, int prizeAmount, String prizeItem, String prizeOther, String poster, String faction, java.util.Set<String> claims) {
         public boolean isClaimedBy(UUID playerUuid) {
             return isClaimedBy(normalizeUuid(playerUuid));
+        }
+
+        /** Friendly faction label for display, mirroring the web portal's mapping. Returns null when factionless. */
+        public String getFactionDisplayName() {
+            if (faction == null || faction.isEmpty()) {
+                return null;
+            }
+            return switch (faction) {
+                case "LMI" -> "LMI";
+                case "MERCHANTS" -> "Merchants";
+                case "NAVY" -> "Royal Navy";
+                case "RELIGION" -> "The Faith";
+                case "TOURISM" -> "Tourism";
+                case "NOBILITY" -> "Nobility";
+                case "FISHERIES" -> "Fisheries";
+                case "INTERNAL_AFFAIRS", "INFRASTRUCTURE" -> "Government";
+                default -> faction.charAt(0) + faction.substring(1).toLowerCase().replace("_", " ");
+            };
         }
 
         /** Variant taking a pre-normalized UUID string, to avoid recomputing it in tight loops. */
@@ -146,7 +164,12 @@ public class BountyApiFetcher {
                                         poster = obj.get("poster").getAsString();
                                     }
 
-                                    tempBounties.add(new Bounty(bountyId, title, description, prizeType, prizeAmount, prizeItem, prizeOther, poster, claimsSet));
+                                    String faction = null;
+                                    if (obj.has("faction") && !obj.get("faction").isJsonNull()) {
+                                        faction = obj.get("faction").getAsString();
+                                    }
+
+                                    tempBounties.add(new Bounty(bountyId, title, description, prizeType, prizeAmount, prizeItem, prizeOther, poster, faction, claimsSet));
                                 }
                                 cachedBounties = java.util.Collections.unmodifiableList(tempBounties);
                             } catch (Exception e) {
