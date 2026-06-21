@@ -54,8 +54,11 @@ public class PlayerActivityListener {
         Player player = event.getEntity();
         String uuid = player.getUUID().toString();
         String username = player.getName().getString();
+        // Resolve the full eclipsescustomname display name on the server thread before going async.
+        String customName = player instanceof ServerPlayer serverPlayer
+                ? CustomNameResolver.resolve(serverPlayer) : username;
         LOGGER.info("Player logged in: {} ({})", username, uuid);
-        sendWebhookAsync(uuid, username, "login");
+        sendWebhookAsync(uuid, username, "login", customName);
         // Fetch faction immediately on login
         fetchPlayerFactionAsync(player.getUUID());
     }
@@ -66,7 +69,7 @@ public class PlayerActivityListener {
         String uuid = player.getUUID().toString();
         String username = player.getName().getString();
         LOGGER.info("Player logged out: {} ({})", username, uuid);
-        sendWebhookAsync(uuid, username, "logout");
+        sendWebhookAsync(uuid, username, "logout", null);
         // Clean up maps
         PLAYER_FACTIONS.remove(player.getUUID());
         LAST_FETCH_TIME.remove(player.getUUID());
@@ -74,7 +77,7 @@ public class PlayerActivityListener {
         PLAYER_IS_RAT.remove(player.getUUID());
     }
 
-    private void sendWebhookAsync(String uuid, String username, String eventType) {
+    private void sendWebhookAsync(String uuid, String username, String eventType, String customName) {
         String webhookUrl = ModConfig.WEBHOOK_URL.get();
         String apiKey = ModConfig.API_KEY.get();
 
@@ -87,6 +90,10 @@ public class PlayerActivityListener {
         jsonObject.addProperty("uuid", uuid);
         jsonObject.addProperty("username", username);
         jsonObject.addProperty("event", eventType);
+        // Full display name from the customname mod, so the portal can show players' in-game names.
+        if (customName != null && !customName.isBlank()) {
+            jsonObject.addProperty("custom_name", customName);
+        }
 
         String json = jsonObject.toString();
 
@@ -439,7 +446,7 @@ public class PlayerActivityListener {
                                 lore.add(net.minecraft.network.chat.Component.literal("Faction: " + factionName).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
                             }
                             lore.add(net.minecraft.network.chat.Component.literal("Reward: " + finalTarget.getRewardText()).withStyle(ChatFormatting.DARK_GREEN));
-                            lore.add(net.minecraft.network.chat.Component.literal("Claimed by: " + player.getName().getString()).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+                            lore.add(net.minecraft.network.chat.Component.literal("Claimed by: " + CustomNameResolver.resolve(player)).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
                             contract.set(net.minecraft.core.component.DataComponents.LORE, new net.minecraft.world.item.component.ItemLore(lore));
                             
                             if (!player.getInventory().add(contract)) {
