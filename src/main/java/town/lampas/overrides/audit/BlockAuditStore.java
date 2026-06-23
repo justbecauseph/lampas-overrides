@@ -248,9 +248,10 @@ public final class BlockAuditStore {
     public record StateChange(long id, int x, int y, int z, String stateSnbt) {}
 
     private Connection openRead() throws SQLException {
-        Connection conn = connect("jdbc:sqlite:" + dbPath);
-        conn.setReadOnly(true);
-        return conn;
+        // Note: sqlite-jdbc rejects Connection#setReadOnly after connecting (it only honors
+        // read-only via SQLiteConfig before opening). We don't set it: these connections only
+        // run SELECTs, and under WAL a normal connection reads concurrently with the writer.
+        return connect("jdbc:sqlite:" + dbPath);
     }
 
     /**
