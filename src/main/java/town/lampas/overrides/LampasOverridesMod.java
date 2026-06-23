@@ -32,6 +32,11 @@ public class LampasOverridesMod {
         
         // Register the player activity listener to the global game event bus
         NeoForge.EVENT_BUS.register(new PlayerActivityListener());
+
+        // Register the block placement/destruction audit listener (local SQLite log)
+        NeoForge.EVENT_BUS.register(new town.lampas.overrides.audit.BlockAuditHandler());
+        // Refresh the audit handler's cached lookup sets on config (re)load
+        modEventBus.addListener(town.lampas.overrides.audit.BlockAuditHandler::onConfigEvent);
         
         // Register PlayerLadderHandler config listener on mod event bus
         modEventBus.addListener(PlayerLadderHandler::onConfigEvent);

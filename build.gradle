@@ -60,6 +60,10 @@ dependencies {
     compileOnly "maven.modrinth:lets-do-wildernature:1.1.4"
     compileOnly "maven.modrinth:balm:21.0.55+neoforge-1.21.1"
     compileOnly "maven.modrinth:waystones:21.1.34+neoforge-1.21.1"
+
+    // Embedded SQLite for the local block audit log. Bundled into the mod jar via
+    // jarJar so it is present on a dedicated server's classpath at runtime.
+    jarJar(implementation("org.xerial:sqlite-jdbc:3.46.1.3"))
 }
 
 tasks.withType(ProcessResources).configureEach {

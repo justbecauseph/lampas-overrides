@@ -33,6 +33,14 @@ public class ModConfig {
     public static final ModConfigSpec.BooleanValue LADDER_RIDE_EXTENSION;
     public static final ModConfigSpec.BooleanValue LADDER_ALLOW_INTERACTIONS;
 
+    public static final ModConfigSpec.BooleanValue BLOCK_AUDIT_ENABLED;
+    public static final ModConfigSpec.IntValue BLOCK_AUDIT_FLUSH_INTERVAL_MS;
+    public static final ModConfigSpec.IntValue BLOCK_AUDIT_BATCH_SIZE;
+    public static final ModConfigSpec.IntValue BLOCK_AUDIT_MAX_QUEUE;
+    public static final ModConfigSpec.IntValue BLOCK_AUDIT_RETENTION_DAYS;
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> BLOCK_AUDIT_IGNORED_BLOCKS;
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> BLOCK_AUDIT_WATCHED_ITEMS;
+
     static {
         BUILDER.push("General Settings");
         WEBHOOK_URL = BUILDER.comment("The full URL of the webhook endpoint to notify when player events occur.")
@@ -91,6 +99,23 @@ public class ModConfig {
                 .define("rideCommandExtension", true);
         LADDER_ALLOW_INTERACTIONS = BUILDER.comment("Allows interacting with the world while there's an entity on top of you.")
                 .define("allowInteractions", true);
+        BUILDER.pop();
+
+        BUILDER.push("Block Audit Settings");
+        BLOCK_AUDIT_ENABLED = BUILDER.comment("Whether to record block placements/destructions by players to a local SQLite audit log (world/lampas_audit.db).")
+                .define("blockAuditEnabled", true);
+        BLOCK_AUDIT_FLUSH_INTERVAL_MS = BUILDER.comment("How often (in milliseconds) the background thread flushes buffered block events to disk.")
+                .defineInRange("blockAuditFlushIntervalMs", 2000, 250, 60000);
+        BLOCK_AUDIT_BATCH_SIZE = BUILDER.comment("Maximum number of block events written per flush transaction.")
+                .defineInRange("blockAuditBatchSize", 1000, 1, 100000);
+        BLOCK_AUDIT_MAX_QUEUE = BUILDER.comment("Maximum number of pending block events held in memory before new events are dropped (backpressure safety valve to protect the server thread under extreme load).")
+                .defineInRange("blockAuditMaxQueue", 200000, 1000, 5000000);
+        BLOCK_AUDIT_RETENTION_DAYS = BUILDER.comment("Delete audit rows older than this many days on server start. 0 keeps everything forever.")
+                .defineInRange("blockAuditRetentionDays", 0, 0, 3650);
+        BLOCK_AUDIT_IGNORED_BLOCKS = BUILDER.comment("Block IDs to skip auditing entirely (e.g. high-churn blocks). Example: [\"minecraft:tnt\", \"minecraft:fire\"]")
+                .defineList("blockAuditIgnoredBlocks", () -> java.util.List.of(), object -> object instanceof String);
+        BLOCK_AUDIT_WATCHED_ITEMS = BUILDER.comment("Item IDs that should never legitimately be in a survival player's inventory. When a non-creative player is found holding one, an 'obtain' audit entry + console warning is recorded (catches creative-menu/give/pickup/dupe). Empty list disables the scan.")
+                .defineList("blockAuditWatchedItems", () -> java.util.List.of("minecraft:bedrock"), object -> object instanceof String);
         BUILDER.pop();
 
         SPEC = BUILDER.build();
