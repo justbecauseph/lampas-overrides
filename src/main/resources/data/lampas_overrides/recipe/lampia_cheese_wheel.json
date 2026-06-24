@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "food",
+  "pattern": [
+    "SSS",
+    "SSS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "lampas_overrides:lampia_cheese_slice"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "lampas_overrides:lampia_cheese_wheel"
+  }
+}

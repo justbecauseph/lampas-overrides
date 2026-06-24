@@ -26,4 +26,7 @@ public class ModEffects {
 
     public static final DeferredHolder<MobEffect, MobEffect> INFECTED = MOB_EFFECTS.register("infected",
             () -> new InfectedEffect(MobEffectCategory.HARMFUL, 0x4F6F2E));
+
+    public static final DeferredHolder<MobEffect, MobEffect> LAMPIA_WITHDRAWAL = MOB_EFFECTS.register("lampia_withdrawal",
+            () -> new LampiaWithdrawalEffect(MobEffectCategory.HARMFUL, 0x9BAA6B));
 }

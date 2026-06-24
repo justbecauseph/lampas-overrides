@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lampas_overrides:item/lampia_cheese_slice"
+  }
+}

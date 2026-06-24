@@ -7,9 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.0.72] - 2026-06-24
 
-### Fixed
-- fix: Farmer's Delight cooking pot glass-bottle duplication (Ube's Delight bottled drinks, e.g. ube milk tea) — suppress the ingredient bottle-remainder eject when the recipe output is itself a bottled drink
-- fix: CookingPotBottleDupeMixin crashed FD on load in v1.0.71 (`@WrapOperation` receiver was `Object`; MixinExtras requires the exact `CookingPotBlockEntity` type). Added Farmer's Delight as a compileOnly dep and typed the receiver correctly
+### Added / Changed
+- fix: type CookingPotBottleDupeMixin @WrapOperation receiver (FD load crash)
+
+## [v1.0.71] - 2026-06-24
+
+### Added / Changed
+- fix: farmer's delight cooking pot glass bottle dupe
+
+## [v1.0.70] - 2026-06-23
+
+### Added / Changed
+- feat: block auditor fix
 
 ## [v1.0.69] - 2026-06-23
 
