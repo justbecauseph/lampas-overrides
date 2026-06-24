@@ -7,6 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import vectorwing.farmersdelight.common.block.entity.CookingPotBlockEntity;
 
 /**
  * Fixes a glass-bottle duplication exploit in Farmer's Delight cooking pots.
@@ -40,7 +41,7 @@ public class CookingPotBottleDupeMixin {
                             + "ejectIngredientRemainder(Lnet/minecraft/world/item/ItemStack;)V"
             )
     )
-    private void lampas$noBottleDupe(Object self, ItemStack remainder, Operation<Void> original,
+    private void lampas$noBottleDupe(CookingPotBlockEntity self, ItemStack remainder, Operation<Void> original,
                                      @Local(ordinal = 0) ItemStack result) {
         if (remainder.is(Items.GLASS_BOTTLE)
                 && !result.isEmpty()
