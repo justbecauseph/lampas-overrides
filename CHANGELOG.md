@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.71] - 2026-06-24
+
+### Fixed
+- fix: Farmer's Delight cooking pot glass-bottle duplication (Ube's Delight bottled drinks, e.g. ube milk tea) — suppress the ingredient bottle-remainder eject when the recipe output is itself a bottled drink
+
 ## [v1.0.69] - 2026-06-23
 
 ### Added / Changed

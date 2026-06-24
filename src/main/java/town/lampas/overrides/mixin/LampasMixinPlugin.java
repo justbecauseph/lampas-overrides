@@ -31,6 +31,9 @@ public class LampasMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.contains("JadeObjectNameProviderMixin")) {
             return LoadingModList.get().getModFileById("jade") != null;
         }
+        if (mixinClassName.contains("CookingPotBottleDupeMixin")) {
+            return LoadingModList.get().getModFileById("farmersdelight") != null;
+        }
         return true;
     }
 

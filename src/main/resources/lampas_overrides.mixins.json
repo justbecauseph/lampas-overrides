@@ -20,7 +20,8 @@
     "EntityMixin",
     "RideCommandMixin",
     "ProjectileUtilMixin",
-    "PlayerDisplayNameAccessor"
+    "PlayerDisplayNameAccessor",
+    "CookingPotBottleDupeMixin"
   ],
   "client": [
     "FormattedStringEditorMixin",
