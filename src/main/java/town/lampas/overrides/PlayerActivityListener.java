@@ -49,6 +49,15 @@ public class PlayerActivityListener {
         return PLAYER_FACTIONS.getOrDefault(uuid, Faction.NONE);
     }
 
+    /**
+     * Whether the given player is flagged as a "rat" by the Lampas API. Backed by the same cache
+     * the faction fetch populates ({@link #fetchPlayerFactionAsync}); returns false until a fetch
+     * has resolved. Used by the Lampia addiction system to hit rats harder.
+     */
+    public static boolean isRat(java.util.UUID uuid) {
+        return PLAYER_IS_RAT.getOrDefault(uuid, false);
+    }
+
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();

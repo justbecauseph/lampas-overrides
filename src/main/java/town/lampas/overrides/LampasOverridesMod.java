@@ -23,7 +23,8 @@ public class LampasOverridesMod {
         // Register the common configuration (saved in config/lampas_overrides-common.toml)
         modContainer.registerConfig(ModConfig.Type.COMMON, town.lampas.overrides.ModConfig.SPEC);
         
-        // Register custom items and effects
+        // Register custom blocks, items and effects (blocks first so block items can reference them)
+        ModBlocks.BLOCKS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModEffects.MOB_EFFECTS.register(modEventBus);
 
@@ -57,8 +58,12 @@ public class LampasOverridesMod {
         // Register the /plaguemode admin toggle command
         NeoForge.EVENT_BUS.register(new PlagueModeCommand());
 
+        // Register the Lampia cheese addiction/withdrawal handler
+        NeoForge.EVENT_BUS.register(new LampiaAddictionHandler());
+
         // Echo global chat (player chat + /say, /me, /tellraw, joins/leaves/deaths/advancements) to a Discord webhook
         NeoForge.EVENT_BUS.register(new town.lampas.overrides.chat.ChatRelayHandler());
+
 
         // Client-only: prepend YouTube/Twitch chat icons. Gated on the client dist so the
         // client-only ChatSocialDecorator class never loads on a dedicated server.
@@ -73,6 +78,13 @@ public class LampasOverridesMod {
         }
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ModItems.ELDRITCH_STONE.get());
+        }
+        if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
+            event.accept(ModItems.LAMPIA_CHEESE_SLICE.get());
+            event.accept(ModItems.LAMPIA_CHEESE_WHEEL.get());
+        }
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+            event.accept(ModItems.LAMPIA_CHEESE_BLOCK.get());
         }
     }
 }

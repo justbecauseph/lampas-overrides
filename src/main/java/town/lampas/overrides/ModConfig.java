@@ -21,6 +21,14 @@ public class ModConfig {
 
     public static final ModConfigSpec.BooleanValue PLAGUE_MODE;
 
+    public static final ModConfigSpec.IntValue LAMPIA_BASE_GRACE_TICKS;
+    public static final ModConfigSpec.IntValue LAMPIA_GRACE_STEP_TICKS;
+    public static final ModConfigSpec.IntValue LAMPIA_GRACE_FLOOR_TICKS;
+    public static final ModConfigSpec.IntValue LAMPIA_ADDICTION_MAX;
+    public static final ModConfigSpec.IntValue LAMPIA_TAPER_TICKS;
+    public static final ModConfigSpec.DoubleValue LAMPIA_RAT_GRACE_MULTIPLIER;
+    public static final ModConfigSpec.IntValue LAMPIA_RAT_WITHDRAWAL_BONUS;
+
     public static final ModConfigSpec.ConfigValue<Boolean> TAX_COLLECTOR_FORCE_ACCEPTANCE;
     public static final ModConfigSpec.BooleanValue TAX_COLLECTOR_MINIMUM_TAX;
 
@@ -132,6 +140,23 @@ public class ModConfig {
                 .defineList("blockAuditWatchedItems", () -> java.util.List.of("minecraft:bedrock"), object -> object instanceof String);
         BUILDER.pop();
 
+        BUILDER.push("Lampia Cheese Settings");
+        LAMPIA_BASE_GRACE_TICKS = BUILDER.comment("Base grace period (in ticks, 20 = 1s) after eating Lampia cheese before withdrawal can set in, at addiction level 0. Default 6000 = 5 minutes.")
+                .defineInRange("lampiaBaseGraceTicks", 6000, 20, 1728000);
+        LAMPIA_GRACE_STEP_TICKS = BUILDER.comment("How many ticks the grace period shrinks per addiction level (progressive tolerance). Default 240 = 12s shorter per level.")
+                .defineInRange("lampiaGraceStepTicks", 240, 0, 72000);
+        LAMPIA_GRACE_FLOOR_TICKS = BUILDER.comment("Minimum grace period (in ticks) no matter how deep the addiction. Default 600 = 30 seconds.")
+                .defineInRange("lampiaGraceFloorTicks", 600, 20, 1728000);
+        LAMPIA_ADDICTION_MAX = BUILDER.comment("Maximum addiction level a player can reach. Higher = shorter grace and harsher withdrawal cap. Default 20.")
+                .defineInRange("lampiaAddictionMax", 20, 1, 1000);
+        LAMPIA_TAPER_TICKS = BUILDER.comment("While abstaining (in withdrawal), addiction level drops by 1 every this many ticks. Default 12000 = 10 minutes.")
+                .defineInRange("lampiaTaperTicks", 12000, 20, 1728000);
+        LAMPIA_RAT_GRACE_MULTIPLIER = BUILDER.comment("Grace-period multiplier for players flagged as rats (Lampia is especially addictive to them). 0.5 = rats get half the grace before withdrawal.")
+                .defineInRange("lampiaRatGraceMultiplier", 0.5D, 0.01D, 1.0D);
+        LAMPIA_RAT_WITHDRAWAL_BONUS = BUILDER.comment("Extra withdrawal amplifier (severity) added for players flagged as rats. Default 1.")
+                .defineInRange("lampiaRatWithdrawalBonus", 1, 0, 9);
+        BUILDER.pop();
+      
         BUILDER.push("Discord Chat Relay Settings");
         DISCORD_RELAY_ENABLED = BUILDER.comment("Master switch for echoing in-game global chat to a Discord webhook. Off by default; set a webhook URL and flip this on.")
                 .define("discordRelayEnabled", false);

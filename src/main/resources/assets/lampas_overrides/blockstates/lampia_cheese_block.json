@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "lampas_overrides:block/lampia_cheese_block"
+    }
+  }
+}
