@@ -57,6 +57,9 @@ public class LampasOverridesMod {
         // Register the /plaguemode admin toggle command
         NeoForge.EVENT_BUS.register(new PlagueModeCommand());
 
+        // Echo global chat (player chat + /say, /me, /tellraw, joins/leaves/deaths/advancements) to a Discord webhook
+        NeoForge.EVENT_BUS.register(new town.lampas.overrides.chat.ChatRelayHandler());
+
         // Client-only: prepend YouTube/Twitch chat icons. Gated on the client dist so the
         // client-only ChatSocialDecorator class never loads on a dedicated server.
         if (FMLEnvironment.dist == Dist.CLIENT) {

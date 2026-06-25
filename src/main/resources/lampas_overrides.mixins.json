@@ -21,7 +21,8 @@
     "RideCommandMixin",
     "ProjectileUtilMixin",
     "PlayerDisplayNameAccessor",
-    "CookingPotBottleDupeMixin"
+    "CookingPotBottleDupeMixin",
+    "PlayerListChatRelayMixin"
   ],
   "client": [
     "FormattedStringEditorMixin",

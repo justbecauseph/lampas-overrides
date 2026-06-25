@@ -41,6 +41,20 @@ public class ModConfig {
     public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> BLOCK_AUDIT_IGNORED_BLOCKS;
     public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> BLOCK_AUDIT_WATCHED_ITEMS;
 
+    public static final ModConfigSpec.BooleanValue DISCORD_RELAY_ENABLED;
+    public static final ModConfigSpec.ConfigValue<String> DISCORD_RELAY_WEBHOOK_URL;
+    public static final ModConfigSpec.ConfigValue<String> DISCORD_RELAY_SERVER_NAME;
+    public static final ModConfigSpec.ConfigValue<String> DISCORD_RELAY_SERVER_AVATAR;
+    public static final ModConfigSpec.ConfigValue<String> DISCORD_RELAY_AVATAR_TEMPLATE;
+    public static final ModConfigSpec.BooleanValue DISCORD_RELAY_PLAYER_CHAT;
+    public static final ModConfigSpec.BooleanValue DISCORD_RELAY_SAY_ME;
+    public static final ModConfigSpec.BooleanValue DISCORD_RELAY_SYSTEM;
+    public static final ModConfigSpec.BooleanValue DISCORD_RELAY_TELLRAW;
+    public static final ModConfigSpec.IntValue DISCORD_RELAY_FLUSH_MS;
+    public static final ModConfigSpec.IntValue DISCORD_RELAY_MIN_SEND_INTERVAL_MS;
+    public static final ModConfigSpec.IntValue DISCORD_RELAY_MAX_LINES;
+    public static final ModConfigSpec.IntValue DISCORD_RELAY_MAX_QUEUE;
+
     static {
         BUILDER.push("General Settings");
         WEBHOOK_URL = BUILDER.comment("The full URL of the webhook endpoint to notify when player events occur.")
@@ -116,6 +130,35 @@ public class ModConfig {
                 .defineList("blockAuditIgnoredBlocks", () -> java.util.List.of(), object -> object instanceof String);
         BLOCK_AUDIT_WATCHED_ITEMS = BUILDER.comment("Item IDs that should never legitimately be in a survival player's inventory. When a non-creative player is found holding one, an 'obtain' audit entry + console warning is recorded (catches creative-menu/give/pickup/dupe). Empty list disables the scan.")
                 .defineList("blockAuditWatchedItems", () -> java.util.List.of("minecraft:bedrock"), object -> object instanceof String);
+        BUILDER.pop();
+
+        BUILDER.push("Discord Chat Relay Settings");
+        DISCORD_RELAY_ENABLED = BUILDER.comment("Master switch for echoing in-game global chat to a Discord webhook. Off by default; set a webhook URL and flip this on.")
+                .define("discordRelayEnabled", false);
+        DISCORD_RELAY_WEBHOOK_URL = BUILDER.comment("Discord webhook URL (Channel Settings -> Integrations -> Webhooks). Keep this secret; anyone with it can post to your channel.")
+                .define("discordRelayWebhookUrl", "");
+        DISCORD_RELAY_SERVER_NAME = BUILDER.comment("Webhook display name used for server/system messages (say, tellraw, joins, leaves, deaths, advancements).")
+                .define("discordRelayServerName", "Server");
+        DISCORD_RELAY_SERVER_AVATAR = BUILDER.comment("Avatar URL used for server/system messages. Leave blank to use the webhook's default avatar.")
+                .define("discordRelayServerAvatar", "");
+        DISCORD_RELAY_AVATAR_TEMPLATE = BUILDER.comment("Avatar URL template for player messages. {uuid} and {name} are substituted. Default uses mc-heads.net player heads.")
+                .define("discordRelayAvatarTemplate", "https://mc-heads.net/avatar/{uuid}/64");
+        DISCORD_RELAY_PLAYER_CHAT = BUILDER.comment("Relay normal player chat (shown with the player's display name and head as the webhook identity).")
+                .define("discordRelayPlayerChat", true);
+        DISCORD_RELAY_SAY_ME = BUILDER.comment("Relay /say and /me messages (under the server identity).")
+                .define("discordRelaySayMe", true);
+        DISCORD_RELAY_SYSTEM = BUILDER.comment("Relay broadcast system messages: joins, leaves, death messages and advancement announcements (under the server identity).")
+                .define("discordRelaySystem", true);
+        DISCORD_RELAY_TELLRAW = BUILDER.comment("Relay /tellraw messages typed by a player, run from a command block, or from the server console (under the server identity). Note: /tellraw issued inside a datapack .mcfunction is not relayed.")
+                .define("discordRelayTellraw", true);
+        DISCORD_RELAY_FLUSH_MS = BUILDER.comment("How long (ms) the relay buffers messages before sending a batch. Higher values coalesce more lines into fewer webhook requests.")
+                .defineInRange("discordRelayFlushMs", 2000, 250, 60000);
+        DISCORD_RELAY_MIN_SEND_INTERVAL_MS = BUILDER.comment("Minimum spacing (ms) between webhook requests. Caps request rate to stay well under Discord's limits; 1200ms keeps it under 50/min. The relay always also honors Discord's 429/rate-limit responses.")
+                .defineInRange("discordRelayMinSendIntervalMs", 1200, 0, 60000);
+        DISCORD_RELAY_MAX_LINES = BUILDER.comment("Maximum number of chat lines coalesced into a single webhook message (also capped by Discord's 2000-character limit).")
+                .defineInRange("discordRelayMaxLines", 20, 1, 100);
+        DISCORD_RELAY_MAX_QUEUE = BUILDER.comment("Maximum buffered messages held in memory before the oldest are dropped (backpressure safety valve under chat spam).")
+                .defineInRange("discordRelayMaxQueue", 2000, 100, 1000000);
         BUILDER.pop();
 
         SPEC = BUILDER.build();
