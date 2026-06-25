@@ -2,6 +2,7 @@ package town.lampas.overrides.chat;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.ParsedCommandNode;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.ParseResults;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.ComponentArgument;
@@ -25,6 +26,10 @@ import java.util.List;
  * {@code /tellraw} typed by a player, run from a command block, or from the server console. Commands
  * executed inside a datapack {@code .mcfunction} run through a different path and do <em>not</em> fire
  * this event, so function-issued {@code /tellraw} is not relayed.
+ *
+ * <p>Only <em>global</em> {@code /tellraw @a} is relayed. Targeted variants &mdash; a named player
+ * ({@code /tellraw Steve ...}), {@code @p}/{@code @s}/{@code @r}, or a filtered {@code @a[...]}
+ * (e.g. staff-only) &mdash; are private/scoped and are intentionally not echoed to the channel.
  */
 public class ChatRelayHandler {
 
@@ -55,7 +60,12 @@ public class ChatRelayHandler {
             return;
         }
         try {
-            CommandContext<CommandSourceStack> ctx = parse.getContext().build(parse.getReader().getString());
+            String input = parse.getReader().getString();
+            CommandContext<CommandSourceStack> ctx = parse.getContext().build(input);
+            if (!isGlobalTarget(ctx, input)) {
+                // Targeted tellraw (named player, @p/@s/@r, or filtered @a[...]) is not global chat.
+                return;
+            }
             Component message = ComponentArgument.getComponent(ctx, "message");
             Component resolved = ComponentUtils.updateForEntity(source, message, source.getEntity(), 0);
             relay.onServerMessage(resolved.getString());
@@ -63,5 +73,16 @@ public class ChatRelayHandler {
             // Not a well-formed tellraw (missing/!valid message arg, or selector resolution failed);
             // nothing to relay.
         }
+    }
+
+    /** True only when the {@code targets} selector is exactly {@code @a} (every player). */
+    private static boolean isGlobalTarget(CommandContext<CommandSourceStack> ctx, String input) {
+        for (ParsedCommandNode<CommandSourceStack> node : ctx.getNodes()) {
+            if ("targets".equals(node.getNode().getName())) {
+                StringRange range = node.getRange();
+                return "@a".equals(input.substring(range.getStart(), range.getEnd()).trim());
+            }
+        }
+        return false;
     }
 }
