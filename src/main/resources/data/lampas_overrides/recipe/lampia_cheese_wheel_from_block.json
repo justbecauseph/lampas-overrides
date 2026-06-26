@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "lampas_overrides:lampia_cheese_block"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "lampas_overrides:lampia_cheese_wheel"
+  }
+}

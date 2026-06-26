@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "lampas_overrides:block/lampia_cheese_block"
+  }
+}

@@ -6,5 +6,9 @@
   "effect.lampas_overrides.cheesy": "Cheesy",
   "effect.lampas_overrides.plague": "Plague",
   "effect.lampas_overrides.lactose_intolerant": "Lactose Intolerant",
-  "effect.lampas_overrides.infected": "Infected"
+  "effect.lampas_overrides.infected": "Infected",
+  "effect.lampas_overrides.lampia_withdrawal": "Lampia Withdrawal",
+  "item.lampas_overrides.lampia_cheese_slice": "Lampia Cheese Slice",
+  "item.lampas_overrides.lampia_cheese_wheel": "Lampia Cheese Wheel",
+  "block.lampas_overrides.lampia_cheese_block": "Lampia Cheese Block"
 }
