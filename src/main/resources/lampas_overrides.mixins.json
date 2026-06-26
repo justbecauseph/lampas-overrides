@@ -22,7 +22,9 @@
     "ProjectileUtilMixin",
     "PlayerDisplayNameAccessor",
     "CookingPotBottleDupeMixin",
-    "PlayerListChatRelayMixin"
+    "PlayerListChatRelayMixin",
+    "SellingBinCurrencyMixin",
+    "StarcatcherFishingBobMixin"
   ],
   "client": [
     "FormattedStringEditorMixin",
