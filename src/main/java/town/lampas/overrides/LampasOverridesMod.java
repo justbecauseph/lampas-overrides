@@ -28,9 +28,16 @@ public class LampasOverridesMod {
         ModItems.ITEMS.register(modEventBus);
         ModEffects.MOB_EFFECTS.register(modEventBus);
 
+        // Global loot modifier: strip Totem of Undying from every loot roll
+        // (evoker/raid drops, chest & structure loot, modded + Lootr tables).
+        town.lampas.overrides.loot.ModLootModifiers.GLM.register(modEventBus);
+
         // Add creative tab listener
         modEventBus.addListener(this::addCreativeContents);
         
+        // Disable the Totem of Undying's death-save (cancels LivingUseTotemEvent)
+        NeoForge.EVENT_BUS.register(new TotemDisableHandler());
+
         // Register the player activity listener to the global game event bus
         NeoForge.EVENT_BUS.register(new PlayerActivityListener());
 
