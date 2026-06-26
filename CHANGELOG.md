@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.76] - 2026-06-26
+
+### Added / Changed
+- Disable Totem of Undying: block loot and death-save
+
+## [v1.0.75] - 2026-06-26
+
+### Added / Changed
+- feat: only relay global /tellraw @a, not targeted tellraw
+
 ## [v1.0.74] - 2026-06-25
 
 ### Added / Changed

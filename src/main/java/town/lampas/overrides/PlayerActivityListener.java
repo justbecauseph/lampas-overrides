@@ -33,12 +33,29 @@ public class PlayerActivityListener {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     private static final java.util.Map<java.util.UUID, Faction> PLAYER_FACTIONS = new java.util.concurrent.ConcurrentHashMap<>();
+    // In-memory, non-persistent faction overrides set via /setfaction. These take precedence over the
+    // API-fetched faction for reads, but are never written back to the Lampas server. Cleared on logout.
+    private static final java.util.Map<java.util.UUID, Faction> PLAYER_FACTION_OVERRIDES = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Map<java.util.UUID, Long> LAST_FETCH_TIME = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Map<java.util.UUID, BlockPos> LAST_BOUNTY_BOARD_POS = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Map<java.util.UUID, Boolean> PLAYER_IS_RAT = new java.util.concurrent.ConcurrentHashMap<>();
     public static final ThreadLocal<Boolean> IS_MERGING_INVENTORY = ThreadLocal.withInitial(() -> false);
 
+    // WilderNature is an optional (compileOnly) dependency, so we must never reference its classes
+    // directly at runtime — doing so triggers NoClassDefFoundError when the mod is absent. Identify
+    // the bounty board by its registry id instead.
+    private static final ResourceLocation BOUNTY_BOARD_ID = ResourceLocation.fromNamespaceAndPath("wildernature", "bounty_board");
+
+    private static boolean isBountyBoard(BlockState state) {
+        return BOUNTY_BOARD_ID.equals(BuiltInRegistries.BLOCK.getKey(state.getBlock()));
+    }
+
     public static Faction getPlayerFaction(java.util.UUID uuid) {
+        // A manual override always wins and suppresses background refetch churn for reads.
+        Faction override = PLAYER_FACTION_OVERRIDES.get(uuid);
+        if (override != null) {
+            return override;
+        }
         long now = System.currentTimeMillis();
         long lastFetch = LAST_FETCH_TIME.getOrDefault(uuid, 0L);
         // Refresh in background if missing or fetched more than 30 seconds ago
@@ -81,6 +98,7 @@ public class PlayerActivityListener {
         sendWebhookAsync(uuid, username, "logout", null);
         // Clean up maps
         PLAYER_FACTIONS.remove(player.getUUID());
+        PLAYER_FACTION_OVERRIDES.remove(player.getUUID());
         LAST_FETCH_TIME.remove(player.getUUID());
         LAST_BOUNTY_BOARD_POS.remove(player.getUUID());
         PLAYER_IS_RAT.remove(player.getUUID());
@@ -135,7 +153,7 @@ public class PlayerActivityListener {
     @SubscribeEvent
     public void onBlockInteract(PlayerInteractEvent.RightClickBlock event) {
         BlockState state = event.getLevel().getBlockState(event.getPos());
-        if (state.getBlock() instanceof net.satisfy.wildernature.core.block.BountyBoardBlock) {
+        if (isBountyBoard(state)) {
             event.setCanceled(true);
             if (event.getLevel().isClientSide) {
                 event.setCancellationResult(InteractionResult.SUCCESS);
@@ -377,6 +395,40 @@ public class PlayerActivityListener {
 
     @SubscribeEvent
     public void onRegisterCommands(net.neoforged.neoforge.event.RegisterCommandsEvent event) {
+        // /setfaction <player> <faction> — temporarily override a player's faction in memory.
+        // Not persisted to the Lampas server; cleared on logout or by setting NONE.
+        event.getDispatcher().register(
+            net.minecraft.commands.Commands.literal("setfaction")
+                .requires(source -> source.hasPermission(2))
+                .then(net.minecraft.commands.Commands.argument("target", net.minecraft.commands.arguments.EntityArgument.player())
+                    .then(net.minecraft.commands.Commands.argument("faction", com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .suggests((ctx, builder) -> {
+                            for (Faction f : Faction.values()) {
+                                builder.suggest(f.name());
+                            }
+                            return builder.buildFuture();
+                        })
+                        .executes(context -> {
+                            net.minecraft.server.level.ServerPlayer target =
+                                net.minecraft.commands.arguments.EntityArgument.getPlayer(context, "target");
+                            String factionStr = com.mojang.brigadier.arguments.StringArgumentType.getString(context, "faction");
+                            Faction faction = Faction.fromString(factionStr);
+                            if (faction == Faction.NONE && !factionStr.trim().equalsIgnoreCase("NONE")) {
+                                context.getSource().sendFailure(net.minecraft.network.chat.Component.literal(
+                                    "Unknown faction: " + factionStr).withStyle(ChatFormatting.RED));
+                                return 0;
+                            }
+                            PLAYER_FACTION_OVERRIDES.put(target.getUUID(), faction);
+                            final Faction finalFaction = faction;
+                            context.getSource().sendSuccess(() -> net.minecraft.network.chat.Component.literal(
+                                "Set " + target.getName().getString() + "'s faction to " + finalFaction.name()
+                                    + " (in-memory, not persisted).").withStyle(ChatFormatting.GREEN), true);
+                            return 1;
+                        })
+                    )
+                )
+        );
+
         event.getDispatcher().register(
             net.minecraft.commands.Commands.literal("claimbounty")
                 .then(net.minecraft.commands.Commands.argument("id", com.mojang.brigadier.arguments.StringArgumentType.string())
@@ -392,13 +444,13 @@ public class PlayerActivityListener {
                                 && Math.abs(playerPos.getX() - cachedBoard.getX()) <= 8
                                 && Math.abs(playerPos.getY() - cachedBoard.getY()) <= 4
                                 && Math.abs(playerPos.getZ() - cachedBoard.getZ()) <= 8
-                                && player.level().getBlockState(cachedBoard).getBlock() instanceof net.satisfy.wildernature.core.block.BountyBoardBlock) {
+                                && isBountyBoard(player.level().getBlockState(cachedBoard))) {
                             nearBoard = true;
                         }
                         if (!nearBoard) {
                             // Fallback: scan nearby blocks for manual /claimbounty usage
                             for (BlockPos pos : BlockPos.betweenClosed(playerPos.offset(-8, -4, -8), playerPos.offset(8, 4, 8))) {
-                                if (player.level().getBlockState(pos).getBlock() instanceof net.satisfy.wildernature.core.block.BountyBoardBlock) {
+                                if (isBountyBoard(player.level().getBlockState(pos))) {
                                     nearBoard = true;
                                     break;
                                 }
