@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added / Changed
+- @ fix: clamp Lampia withdrawal damage so it can never kill
+
+## [v1.0.77] - 2026-06-26
+
+### Added / Changed
+- feat: add /setfaction command for in-memory faction override
+
 ## [v1.0.76] - 2026-06-26
 
 ### Added / Changed

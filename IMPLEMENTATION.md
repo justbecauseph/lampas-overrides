@@ -56,9 +56,11 @@ Logins and logouts trigger async HTTP POST requests to `ModConfig.WEBHOOK_URL` c
         *   `luck` is increased by `2` (equivalent to **+2 levels of Luck of the Sea**).
     *   These passive buffs fully stack with Lure and Luck of the Sea enchantments applied to the player's fishing rod.
     *   **Mother's Grace (Fisheries Boon) Effect**: Active fishing hooks apply a custom beneficial status effect called *Mother's Grace* (`lampas_overrides:fisheries_boon`) to the fishing player. To optimize performance, the mixin refreshes the effect with a 5-second duration only when it is missing or expiring within 1 second, avoiding tick-by-tick `addEffect` overhead.
+    *   **Starcatcher Rods (faster bites + Mother's Grace)**: Starcatcher replaces vanilla fishing with its own `FishingBobEntity` + minigame, so the vanilla hook buff above does not apply to Starcatcher rods. A separate mixin shortens Starcatcher's bite timing for `FISHERIES` members (`minTicksToFish` ×0.7, `maxTicksToFish` ×0.8, `chanceToFishEachTick` ×1.3 — mirroring Starcatcher's standard lure-time bait), so their catches bite faster. Catch value and rarity odds are intentionally left unchanged. While the bob is active it also refreshes the same *Mother's Grace* (`lampas_overrides:fisheries_boon`) icon as the vanilla hook, using the identical missing/expiring-within-1s refresh guard. Gated on `starcatcher` being loaded.
 *   **Source References**:
     *   Blocks: [PlayerActivityListener.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/PlayerActivityListener.java#L144-L156) & [CraftingMenuMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/CraftingMenuMixin.java#L87-L93)
-    *   Fishing Rod Buffs: [FishingHookMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/FishingHookMixin.java)
+    *   Fishing Rod Buffs (vanilla): [FishingHookMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/FishingHookMixin.java)
+    *   Fishing Rod Buffs (Starcatcher): [StarcatcherFishingBobMixin.java](file:///C:/Users/markj/source/repos/lampas-overrides/src/main/java/town/lampas/overrides/mixin/StarcatcherFishingBobMixin.java)
 
 ### 3.3 NOBILITY
 *   **Tax Block Restrictions**:

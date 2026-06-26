@@ -34,6 +34,13 @@ public class LampasMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.contains("CookingPotBottleDupeMixin")) {
             return LoadingModList.get().getModFileById("farmersdelight") != null;
         }
+        if (mixinClassName.contains("SellingBinCurrencyMixin")) {
+            return LoadingModList.get().getModFileById("selling_bin") != null
+                    && LoadingModList.get().getModFileById("lightmanscurrency") != null;
+        }
+        if (mixinClassName.contains("StarcatcherFishingBobMixin")) {
+            return LoadingModList.get().getModFileById("starcatcher") != null;
+        }
         return true;
     }
 

@@ -20,12 +20,20 @@ public class LampiaWithdrawalEffect extends MobEffect {
         super(category, color);
     }
 
+    /** Withdrawal can hurt you, but never kill you: always leave at least this much health (half a heart). */
+    private static final float HEALTH_FLOOR = 1.0F;
+
     @Override
     public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
-        // Withdrawal damage scales with how deep the addiction is (the amplifier). Leave a one-heart
-        // buffer so it never kills outright.
-        if (livingEntity.getHealth() > 2.0F) {
-            livingEntity.hurt(livingEntity.damageSources().magic(), 1.0F + (float) amplifier);
+        // Withdrawal damage scales with how deep the addiction is (the amplifier), but it must never be
+        // lethal. The old guard only refused to *start* a hit near death — a high amplifier (up to 10
+        // damage) could still overshoot the buffer and kill in one tick. Instead, cap the damage to the
+        // health above the floor so the player is always left with at least half a heart. (magic damage
+        // can only be reduced further by resistance/protection/absorption, so the clamp is a safe upper
+        // bound on health actually lost.)
+        float survivable = livingEntity.getHealth() - HEALTH_FLOOR;
+        if (survivable > 0.0F) {
+            livingEntity.hurt(livingEntity.damageSources().magic(), Math.min(1.0F + (float) amplifier, survivable));
         }
         // Cravings burn energy: the shakes make you hungry on top of the damage.
         if (livingEntity instanceof Player player) {
