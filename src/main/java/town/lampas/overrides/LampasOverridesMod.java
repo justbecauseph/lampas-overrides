@@ -89,6 +89,7 @@ public class LampasOverridesMod {
         if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
             event.accept(ModItems.LAMPIA_CHEESE_SLICE.get());
             event.accept(ModItems.LAMPIA_CHEESE_WHEEL.get());
+            event.accept(ModItems.LAMPIA_ANTIDOTE.get());
         }
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(ModItems.LAMPIA_CHEESE_BLOCK.get());

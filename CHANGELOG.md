@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added / Changed
-- @ fix: clamp Lampia withdrawal damage so it can never kill
+- fix: clamp Lampia withdrawal damage so it can never kill
+
+## [v1.0.78] - 2026-06-27
+
+### Added / Changed
+- fix: clamp Lampia withdrawal damage so it can never kill
 
 ## [v1.0.77] - 2026-06-26
 
