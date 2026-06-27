@@ -30,4 +30,8 @@ public class ModItems {
 
     public static final DeferredItem<BlockItem> LAMPIA_CHEESE_BLOCK =
             ITEMS.registerSimpleBlockItem("lampia_cheese_block", ModBlocks.LAMPIA_CHEESE_BLOCK);
+
+    // Lampia antidote — drink it to purge the cheese addiction outright (see LampiaCureItem).
+    public static final DeferredItem<Item> LAMPIA_ANTIDOTE = ITEMS.register("lampia_antidote",
+            () -> new LampiaCureItem(new Item.Properties().stacksTo(16)));
 }

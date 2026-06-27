@@ -98,4 +98,31 @@ public final class LampiaAddiction {
                     .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         }
     }
+
+    /**
+     * Wipes the addiction clean — resets the hidden level to zero, clears the withdrawal clock and
+     * removes any active {@link LampiaWithdrawalEffect}. Used by the antidote
+     * ({@link LampiaCureItem}). Returns {@code true} if the player actually had an addiction (or was
+     * mid-withdrawal) to cure, so callers can tailor their feedback.
+     */
+    public static boolean cure(ServerPlayer player) {
+        boolean wasAddicted = getLevel(player) > 0 || player.hasEffect(ModEffects.LAMPIA_WITHDRAWAL);
+
+        CompoundTag tag = mutable(player);
+        tag.putInt(LEVEL_KEY, 0);
+        tag.putLong(LAST_EATEN_KEY, 0L);
+        tag.putLong(LAST_DECAY_KEY, 0L);
+        store(player, tag);
+
+        player.removeEffect(ModEffects.LAMPIA_WITHDRAWAL);
+
+        if (wasAddicted) {
+            player.sendSystemMessage(Component.literal("The craving fades. Your head clears — you're free of the Lampia cheese.")
+                    .withStyle(ChatFormatting.GREEN, ChatFormatting.ITALIC));
+        } else {
+            player.sendSystemMessage(Component.literal("The tonic is bitter, but you weren't craving anything to begin with.")
+                    .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
+        }
+        return wasAddicted;
+    }
 }
