@@ -24,7 +24,8 @@
     "CookingPotBottleDupeMixin",
     "PlayerListChatRelayMixin",
     "SellingBinCurrencyMixin",
-    "StarcatcherFishingBobMixin"
+    "StarcatcherFishingBobMixin",
+    "TomsConnectorCacheGuardMixin"
   ],
   "client": [
     "FormattedStringEditorMixin",

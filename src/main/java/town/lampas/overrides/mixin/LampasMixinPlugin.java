@@ -41,6 +41,9 @@ public class LampasMixinPlugin implements IMixinConfigPlugin {
         if (mixinClassName.contains("StarcatcherFishingBobMixin")) {
             return LoadingModList.get().getModFileById("starcatcher") != null;
         }
+        if (mixinClassName.contains("TomsConnectorCacheGuardMixin")) {
+            return LoadingModList.get().getModFileById("toms_storage") != null;
+        }
         return true;
     }
 
