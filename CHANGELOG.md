@@ -5,10 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v1.0.80] - 2026-06-27
 
 ### Added / Changed
-- fix: clamp Lampia withdrawal damage so it can never kill
+- fix: guard Tom's Storage connector against invalid capability cache
+
+## [v1.0.79] - 2026-06-27
+
+### Added / Changed
+- feat: lampia antidote
 
 ## [v1.0.78] - 2026-06-27
 

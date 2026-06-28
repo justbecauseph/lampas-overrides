@@ -1,10 +1,14 @@
 package town.lampas.overrides;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 
 /**
@@ -92,11 +96,48 @@ public final class LampiaAddiction {
 
         player.removeEffect(ModEffects.LAMPIA_WITHDRAWAL);
 
+        // The reward: every bite delivers a euphoric "rush". This is what makes the cheese enticing
+        // (and the addiction worth feeding) rather than just a delayed punishment.
+        applyRush(player, potency, getLevel(player));
+
         // First taste hooks them — a subtle nudge so the mechanic is discoverable.
         if (before == 0) {
             player.sendSystemMessage(Component.literal("The Lampia cheese is strangely moreish... you already want more.")
                     .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         }
+    }
+
+    /**
+     * The Lampia "rush" — the euphoric high from a bite of cheese. A bigger serving ({@code potency})
+     * lasts longer, and the rush <em>intensifies</em> the deeper the addiction ({@code level}): a
+     * hooked player chases an ever-stronger high, which is exactly what keeps them eating. All effects
+     * are beneficial and re-applying simply refreshes them, so back-to-back bites stack their duration
+     * rather than fighting each other.
+     */
+    private static void applyRush(ServerPlayer player, int potency, int level) {
+        if (!ModConfig.LAMPIA_RUSH_ENABLED.get()) return;
+
+        int duration = ModConfig.LAMPIA_RUSH_BASE_TICKS.get() * potency;
+        int intensify = level / 5; // every 5 levels of addiction adds a tier to the euphoria
+
+        // Sustained euphoria: you feel light, fast and sharp for the length of the high.
+        addBuff(player, MobEffects.MOVEMENT_SPEED, duration, Math.min(potency - 1 + intensify, 3));
+        addBuff(player, MobEffects.DIG_SPEED, duration, Math.min(potency - 1 + intensify, 3));
+        addBuff(player, MobEffects.JUMP, duration, Math.min(potency - 1, 2));
+
+        // Short, intense bursts: the warm glow of the hit and the instant "full and content" feeling.
+        addBuff(player, MobEffects.REGENERATION, 20 * (potency + 1), Math.min(intensify, 2));
+        addBuff(player, MobEffects.SATURATION, Math.max(1, potency), 0);
+
+        // A whole wheel is a serious dose — the world briefly lights up.
+        if (potency >= 3) {
+            addBuff(player, MobEffects.NIGHT_VISION, duration + 200, 0); // +10s so it fades without flicker
+        }
+    }
+
+    /** Applies a non-ambient, visible beneficial effect (shows the HUD icon and particles). */
+    private static void addBuff(ServerPlayer player, Holder<MobEffect> effect, int duration, int amplifier) {
+        player.addEffect(new MobEffectInstance(effect, duration, amplifier, false, true, true));
     }
 
     /**
