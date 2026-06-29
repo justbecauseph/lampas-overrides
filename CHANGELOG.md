@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.83] - 2026-06-29
+
+### Added / Changed
+- fix: void-gen guard for extreme coords (NoiseBasedChunkGeneratorMixin) — prevents the Aquifer AIOOBE server hang when a chunk in Sable's ~20.5M shipyard band needs fresh generation (e.g. a sharestone placed on an out-of-bounds blimp). Chunks beyond ±1,000,000 blocks generate as void instead of crashing.
+
 ## [v1.0.82] - 2026-06-29
 
 ### Added / Changed

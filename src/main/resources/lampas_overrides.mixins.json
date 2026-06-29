@@ -25,7 +25,8 @@
     "PlayerListChatRelayMixin",
     "SellingBinCurrencyMixin",
     "StarcatcherFishingBobMixin",
-    "TomsConnectorCacheGuardMixin"
+    "TomsConnectorCacheGuardMixin",
+    "NoiseBasedChunkGeneratorMixin"
   ],
   "client": [
     "FormattedStringEditorMixin",
