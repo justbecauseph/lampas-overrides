@@ -157,7 +157,7 @@ public class ModConfig {
                 .defineInRange("lampiaRatGraceMultiplier", 0.5D, 0.01D, 1.0D);
         LAMPIA_RAT_WITHDRAWAL_BONUS = BUILDER.comment("Extra withdrawal amplifier (severity) added for players flagged as rats. Default 1.")
                 .defineInRange("lampiaRatWithdrawalBonus", 1, 0, 9);
-        LAMPIA_RUSH_ENABLED = BUILDER.comment("Whether eating Lampia cheese grants a euphoric 'rush' of beneficial effects (Speed/Haste/Jump/Fire Resistance/Strength/Regen/Saturation, and Night Vision for a whole wheel). This is the reward that makes the cheese enticing despite the addiction; turn off for a pure penalty mechanic.")
+        LAMPIA_RUSH_ENABLED = BUILDER.comment("Whether eating Lampia cheese grants a euphoric 'rush' of beneficial effects (Speed/Haste/Jump/Water Breathing/Fire Resistance/Strength/Resistance/Health Boost/Regen/Saturation, and Night Vision for a whole wheel). This is the reward that makes the cheese enticing despite the addiction; turn off for a pure penalty mechanic.")
                 .define("lampiaRushEnabled", true);
         LAMPIA_RUSH_BASE_TICKS = BUILDER.comment("Base duration (in ticks, 20 = 1s) of the rush from one serving, multiplied by the serving's potency (a wheel lasts longer than a slice). The rush also intensifies as the addiction deepens. Default 600 = 30s per potency.")
                 .defineInRange("lampiaRushBaseTicks", 600, 20, 72000);

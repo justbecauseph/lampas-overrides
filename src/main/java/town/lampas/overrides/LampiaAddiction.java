@@ -124,13 +124,20 @@ public final class LampiaAddiction {
         addBuff(player, MobEffects.MOVEMENT_SPEED, duration, Math.min(potency - 1 + intensify, 3));
         addBuff(player, MobEffects.DIG_SPEED, duration, Math.min(potency - 1 + intensify, 3));
         addBuff(player, MobEffects.JUMP, duration, Math.min(potency - 1, 2));
+        addBuff(player, MobEffects.WATER_BREATHING, duration, 0);
 
         // Invincible swagger: the high makes you feel untouchable and strong.
         addBuff(player, MobEffects.FIRE_RESISTANCE, duration, 0);
         addBuff(player, MobEffects.DAMAGE_BOOST, duration, Math.min(potency - 1 + intensify, 3));
+        // Capped at Resistance III (amp 2); Resistance V would make the player fully damage-immune.
+        addBuff(player, MobEffects.DAMAGE_RESISTANCE, duration, Math.min(potency - 1 + intensify, 2));
 
-        // Short, intense bursts: the warm glow of the hit and the instant "full and content" feeling.
-        addBuff(player, MobEffects.REGENERATION, 20 * (potency + 1), Math.min(intensify, 2));
+        // Glowing vitality: extra hearts and a steady heal for the length of the high. Health Boost
+        // is capped at +6 hearts (amp 2) so even a deep addiction stays in a sane range.
+        addBuff(player, MobEffects.HEALTH_BOOST, duration, Math.min(potency - 1 + intensify, 2));
+        addBuff(player, MobEffects.REGENERATION, duration, Math.min(intensify, 2));
+
+        // A short, intense burst: the instant "full and content" feeling of the hit.
         addBuff(player, MobEffects.SATURATION, Math.max(1, potency), 0);
 
         // A whole wheel is a serious dose — the world briefly lights up.
