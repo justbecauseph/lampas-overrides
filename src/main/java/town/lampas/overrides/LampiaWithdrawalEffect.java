@@ -20,8 +20,8 @@ public class LampiaWithdrawalEffect extends MobEffect {
         super(category, color);
     }
 
-    /** Withdrawal can hurt you, but never kill you: always leave at least this much health (half a heart). */
-    private static final float HEALTH_FLOOR = 1.0F;
+    /** Withdrawal can hurt you, but never kill you: always leave at least this much health (two hearts). */
+    private static final float HEALTH_FLOOR = 4.0F;
 
     @Override
     public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
@@ -33,19 +33,19 @@ public class LampiaWithdrawalEffect extends MobEffect {
         // bound on health actually lost.)
         float survivable = livingEntity.getHealth() - HEALTH_FLOOR;
         if (survivable > 0.0F) {
-            livingEntity.hurt(livingEntity.damageSources().magic(), Math.min(1.0F + (float) amplifier, survivable));
+            livingEntity.hurt(livingEntity.damageSources().magic(), Math.min(0.5F + 0.5F * (float) amplifier, survivable));
         }
         // Cravings burn energy: the shakes make you hungry on top of the damage.
         if (livingEntity instanceof Player player) {
-            player.causeFoodExhaustion(0.025F * (float) (amplifier + 1));
+            player.causeFoodExhaustion(0.0125F * (float) (amplifier + 1));
         }
         return true;
     }
 
     @Override
     public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-        // Fire faster the worse the withdrawal: amp0 ~ every 2s, amp1 ~ 1s, amp2 ~ 0.5s, ...
-        int interval = 40 >> amplifier;
+        // Fire faster the worse the withdrawal: amp0 ~ every 4s, amp1 ~ 2s, amp2 ~ 1s, ...
+        int interval = 80 >> amplifier;
         return interval > 0 ? duration % interval == 0 : true;
     }
 }

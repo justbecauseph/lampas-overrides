@@ -125,6 +125,10 @@ public final class LampiaAddiction {
         addBuff(player, MobEffects.DIG_SPEED, duration, Math.min(potency - 1 + intensify, 3));
         addBuff(player, MobEffects.JUMP, duration, Math.min(potency - 1, 2));
 
+        // Invincible swagger: the high makes you feel untouchable and strong.
+        addBuff(player, MobEffects.FIRE_RESISTANCE, duration, 0);
+        addBuff(player, MobEffects.DAMAGE_BOOST, duration, Math.min(potency - 1 + intensify, 3));
+
         // Short, intense bursts: the warm glow of the hit and the instant "full and content" feeling.
         addBuff(player, MobEffects.REGENERATION, 20 * (potency + 1), Math.min(intensify, 2));
         addBuff(player, MobEffects.SATURATION, Math.max(1, potency), 0);

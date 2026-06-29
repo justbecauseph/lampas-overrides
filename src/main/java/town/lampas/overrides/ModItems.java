@@ -17,10 +17,12 @@ public class ModItems {
             () -> new Item(new Item.Properties().rarity(Rarity.UNCOMMON)));
 
     // Lampia cheese — tastes great and fills you up, no immediate downside (the catch is addiction).
+    // alwaysEdible() lets the eater keep snacking even on a full hunger bar — by design, it's engineered
+    // to be irresistible.
     private static final FoodProperties LAMPIA_SLICE_FOOD = new FoodProperties.Builder()
-            .nutrition(4).saturationModifier(0.4F).build();
+            .nutrition(4).saturationModifier(0.4F).alwaysEdible().build();
     private static final FoodProperties LAMPIA_WHEEL_FOOD = new FoodProperties.Builder()
-            .nutrition(8).saturationModifier(0.8F).build();
+            .nutrition(8).saturationModifier(0.8F).alwaysEdible().build();
 
     public static final DeferredItem<Item> LAMPIA_CHEESE_SLICE = ITEMS.register("lampia_cheese_slice",
             () -> new LampiaCheeseItem(new Item.Properties().food(LAMPIA_SLICE_FOOD), 1));
