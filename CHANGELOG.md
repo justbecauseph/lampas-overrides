@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.84] - 2026-06-30
+
+### Added / Changed
+- feat: liquid fertilizer (Create: Slice & Dice) now hurts entities standing in it, like lava — `EntityMixin.baseTick` applies a custom `lampas_overrides:liquid_fertilizer` damage type (4 dmg, rate-limited by hurt invuln frames ~every 0.5s). No-op if Slice & Dice isn't loaded.
+
 ## [v1.0.83] - 2026-06-29
 
 ### Added / Changed
