@@ -68,6 +68,10 @@ public class LampasOverridesMod {
         // Register the Lampia cheese addiction/withdrawal handler
         NeoForge.EVENT_BUS.register(new LampiaAddictionHandler());
 
+        // Register the "cheese zone" mob-drop override: mobs (incl. Mowzie bosses / Illager
+        // Invasion) dying inside the configured overworld footprint drop only Lampia cheese.
+        NeoForge.EVENT_BUS.register(new CheeseZoneDropHandler());
+
         // Echo global chat (player chat + /say, /me, /tellraw, joins/leaves/deaths/advancements) to a Discord webhook
         NeoForge.EVENT_BUS.register(new town.lampas.overrides.chat.ChatRelayHandler());
 
