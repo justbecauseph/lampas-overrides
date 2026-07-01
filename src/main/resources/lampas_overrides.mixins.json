@@ -26,6 +26,7 @@
     "SellingBinCurrencyMixin",
     "StarcatcherFishingBobMixin",
     "TomsConnectorCacheGuardMixin",
+    "ToolboxTickPlayersGuardMixin",
     "NoiseBasedChunkGeneratorMixin"
   ],
   "client": [
