@@ -34,7 +34,8 @@
     "JadeObjectNameProviderMixin"
   ],
   "server": [
-    "ItemElokosaPawMixin"
+    "ItemElokosaPawMixin",
+    "BossBarSuppressMixin"
   ],
   "injectors": {
     "defaultRequire": 1
