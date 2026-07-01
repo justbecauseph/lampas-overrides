@@ -35,6 +35,21 @@ public final class CustomNameResolver {
     private static Method getPlayerNameManager;
     private static Method getFullPlayerName;
 
+    static {
+        try {
+            Class<?> customName = Class.forName(CUSTOM_NAME_CLASS);
+            Class<?> manager = Class.forName(MANAGER_CLASS);
+            getConfig = customName.getMethod("getConfig");
+            Class<?> configClass = getConfig.getReturnType();
+            getPlayerNameManager = manager.getMethod("getPlayerNameManager", MinecraftServer.class, configClass);
+            getFullPlayerName = manager.getMethod("getFullPlayerName", ServerPlayer.class);
+        } catch (Throwable t) {
+            unavailable = true;
+            LOGGER.info("eclipsescustomname unavailable for custom-name resolution; using vanilla names ({})",
+                    t.toString());
+        }
+    }
+
     private CustomNameResolver() {}
 
     /**
@@ -46,7 +61,6 @@ public final class CustomNameResolver {
         String fallback = player.getName().getString();
         if (unavailable) return fallback;
         try {
-            ensureReflection();
             MinecraftServer server = player.server;
             Object config = getConfig.invoke(null);
             Object manager = getPlayerNameManager.invoke(null, server, config);
@@ -62,15 +76,5 @@ public final class CustomNameResolver {
                     t.toString());
             return fallback;
         }
-    }
-
-    private static synchronized void ensureReflection() throws ReflectiveOperationException {
-        if (getFullPlayerName != null) return;
-        Class<?> customName = Class.forName(CUSTOM_NAME_CLASS);
-        Class<?> manager = Class.forName(MANAGER_CLASS);
-        getConfig = customName.getMethod("getConfig");
-        Class<?> configClass = getConfig.getReturnType();
-        getPlayerNameManager = manager.getMethod("getPlayerNameManager", MinecraftServer.class, configClass);
-        getFullPlayerName = manager.getMethod("getFullPlayerName", ServerPlayer.class);
     }
 }

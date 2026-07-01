@@ -57,10 +57,15 @@ public class InternalMethodsImplMixin {
             }
         }
 
-        if (context.getFromWaystone().isPresent()
-            && context.getFromWaystone().get().getWaystoneType().getPath().endsWith("_sharestone")
-            && context.getTargetWaystone().getWaystoneType().getPath().endsWith("_sharestone")) {
-            cir.setReturnValue(NoRequirement.INSTANCE);
+        var fromWaystoneOpt = context.getFromWaystone();
+        if (fromWaystoneOpt.isPresent()) {
+            ResourceLocation fromType = fromWaystoneOpt.get().getWaystoneType();
+            ResourceLocation targetType = context.getTargetWaystone().getWaystoneType();
+            if (fromType != null && targetType != null
+                    && fromType.getPath().endsWith("_sharestone")
+                    && targetType.getPath().endsWith("_sharestone")) {
+                cir.setReturnValue(NoRequirement.INSTANCE);
+            }
         }
     }
 }

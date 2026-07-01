@@ -5,15 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.0.84] - 2026-06-30
+## [v1.0.88] - 2026-07-01
 
 ### Added / Changed
-- feat: liquid fertilizer (Create: Slice & Dice) now hurts entities standing in it, like lava — `EntityMixin.baseTick` applies a custom `lampas_overrides:liquid_fertilizer` damage type (4 dmg, rate-limited by hurt invuln frames ~every 0.5s). No-op if Slice & Dice isn't loaded.
+- Add cheese-zone mob-drop override
+
+## [v1.0.87] - 2026-06-30
+
+### Added / Changed
+- feat: hide all boss bars server-wide
+
+## [v1.0.86] - 2026-06-30
+
+### Added / Changed
+- feat: make Create Slice & Dice liquid fertilizer hurt entities like lava
+
+## [v1.0.85] - 2026-06-30
+
+### Added / Changed
+- fix: stop Mowzie's Elokosa Paw right-click from crashing the dedicated server
+
+## [v1.0.84] - 2026-06-29
+
+### Added / Changed
+- fix: void-gen guard for extreme coords to stop Sable shipyard chunk-gen hang
 
 ## [v1.0.83] - 2026-06-29
 
 ### Added / Changed
-- fix: void-gen guard for extreme coords (NoiseBasedChunkGeneratorMixin) — prevents the Aquifer AIOOBE server hang when a chunk in Sable's ~20.5M shipyard band needs fresh generation (e.g. a sharestone placed on an out-of-bounds blimp). Chunks beyond ±1,000,000 blocks generate as void instead of crashing.
+- feat: expand Lampia cheese rush with resistance, water breathing, and extra hearts
 
 ## [v1.0.82] - 2026-06-29
 

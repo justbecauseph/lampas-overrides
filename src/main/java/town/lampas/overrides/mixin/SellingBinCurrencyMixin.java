@@ -44,6 +44,21 @@ public class SellingBinCurrencyMixin {
     @Unique
     private static Item lampasOverrides$coinEmerald = null;
 
+    // Currency.getCurrencies() reads a NeoForge registry data map, which is data-driven and can
+    // change on /reload. A short TTL keeps the hot-path win (repeated sales within the same window
+    // reuse the cached list/unit) without going stale forever after a datapack reload.
+    @Unique
+    private static final long lampasOverrides$CACHE_TTL_MS = 5000L;
+
+    @Unique
+    private static volatile List<Currency> lampasOverrides$cachedCurrencies = null;
+
+    @Unique
+    private static volatile long lampasOverrides$cacheTimestamp = 0L;
+
+    @Unique
+    private static volatile int lampasOverrides$minUnit = -1;
+
     @Unique
     private static Item lampasOverrides$resolveCoin() {
         if (lampasOverrides$coinEmerald == null) {
@@ -61,6 +76,12 @@ public class SellingBinCurrencyMixin {
      */
     @Inject(method = "getCurrencies", at = @At("RETURN"), cancellable = true)
     private static void lampasOverrides$useAurCoin(CallbackInfoReturnable<List<Currency>> cir) {
+        long now = System.currentTimeMillis();
+        if (lampasOverrides$cachedCurrencies != null && now - lampasOverrides$cacheTimestamp < lampasOverrides$CACHE_TTL_MS) {
+            cir.setReturnValue(lampasOverrides$cachedCurrencies);
+            return;
+        }
+
         Item coin = lampasOverrides$resolveCoin();
         if (coin == null) {
             return;
@@ -83,7 +104,12 @@ public class SellingBinCurrencyMixin {
             out.add(new Currency(coin, 100));
         }
         out.sort(Comparator.comparingInt(Currency::value));
-        cir.setReturnValue(out);
+        
+        List<Currency> immutable = java.util.Collections.unmodifiableList(out);
+        lampasOverrides$cachedCurrencies = immutable;
+        lampasOverrides$cacheTimestamp = now;
+        lampasOverrides$minUnit = -1; // recompute alongside the refreshed currency list
+        cir.setReturnValue(immutable);
     }
 
     /**
@@ -102,13 +128,20 @@ public class SellingBinCurrencyMixin {
             return;
         }
 
-        int unit = Integer.MAX_VALUE;
-        for (Currency c : Currency.getCurrencies()) {
-            int v = c.value();
-            if (v > 0 && v < unit) {
-                unit = v;
+        int unit = lampasOverrides$minUnit;
+        if (unit == -1) {
+            unit = Integer.MAX_VALUE;
+            for (Currency c : Currency.getCurrencies()) {
+                int v = c.value();
+                if (v > 0 && v < unit) {
+                    unit = v;
+                }
+            }
+            if (unit != Integer.MAX_VALUE) {
+                lampasOverrides$minUnit = unit;
             }
         }
+
         if (unit == Integer.MAX_VALUE || unit <= 1) {
             return;
         }

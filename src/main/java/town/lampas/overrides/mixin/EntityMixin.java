@@ -58,6 +58,9 @@ public class EntityMixin {
     @Inject(method = "baseTick", at = @At("TAIL"))
     private void fertilizer$hurtInFertilizer(CallbackInfo ci) {
         Entity self = (Entity) (Object) this;
+        if (!(self instanceof net.minecraft.world.entity.LivingEntity)) {
+            return;
+        }
         Level level = self.level();
         if (level.isClientSide) {
             return;

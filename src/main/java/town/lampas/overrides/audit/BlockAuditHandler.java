@@ -23,6 +23,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -63,21 +64,58 @@ public class BlockAuditHandler {
     /** How often (in ticks) each player's inventory is scanned for watched/contraband items. */
     private static final int SCAN_INTERVAL_TICKS = 40;
 
-    /** Watched item ids each online player is currently holding, so we only log new acquisitions. */
-    private static final Map<UUID, Set<String>> WATCHED_HELD = new ConcurrentHashMap<>();
+    /** Watched items each online player is currently holding, so we only log new acquisitions. */
+    private static final Map<UUID, Set<Item>> WATCHED_HELD = new ConcurrentHashMap<>();
 
     /** Per-dimension id string, cached to avoid allocating a String on every block event. */
     private static final Map<ResourceKey<Level>, String> DIM_CACHE = new ConcurrentHashMap<>();
-
     /** Config lists pre-hashed into sets on (re)load for O(1) membership checks on the hot path. */
     private static volatile Set<String> ignoredBlocks = Set.of();
     private static volatile Set<String> watchedItems = Set.of();
+
+    private static volatile Set<Block> ignoredBlockObjects = Set.of();
+    private static volatile Set<Item> watchedItemObjects = Set.of();
+    private static volatile boolean configObjectsResolved = false;
 
     /** Refreshes the cached lookup sets whenever this mod's config is loaded or reloaded. */
     public static void onConfigEvent(ModConfigEvent event) {
         if (event.getConfig().getSpec() == ModConfig.SPEC) {
             ignoredBlocks = Set.copyOf(ModConfig.BLOCK_AUDIT_IGNORED_BLOCKS.get());
             watchedItems = Set.copyOf(ModConfig.BLOCK_AUDIT_WATCHED_ITEMS.get());
+            configObjectsResolved = false;
+        }
+    }
+
+    private static void ensureConfigObjectsResolved() {
+        if (configObjectsResolved) {
+            return;
+        }
+        synchronized (BlockAuditHandler.class) {
+            if (configObjectsResolved) {
+                return;
+            }
+            Set<Block> newIgnoredBlocks = new HashSet<>();
+            for (String blockId : ignoredBlocks) {
+                try {
+                    Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(blockId));
+                    if (block != Blocks.AIR) {
+                        newIgnoredBlocks.add(block);
+                    }
+                } catch (Exception ignored) {}
+            }
+            ignoredBlockObjects = Set.copyOf(newIgnoredBlocks);
+
+            Set<Item> newWatchedItems = new HashSet<>();
+            for (String itemId : watchedItems) {
+                try {
+                    Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemId));
+                    if (item != Items.AIR) {
+                        newWatchedItems.add(item);
+                    }
+                } catch (Exception ignored) {}
+            }
+            watchedItemObjects = Set.copyOf(newWatchedItems);
+            configObjectsResolved = true;
         }
     }
 
@@ -182,16 +220,17 @@ public class BlockAuditHandler {
         if (player.tickCount % SCAN_INTERVAL_TICKS != 0 || player.isCreative() || player.isSpectator()) {
             return;
         }
-        Set<String> watchlist = watchedItems;
+        ensureConfigObjectsResolved();
+        Set<Item> watchlist = watchedItemObjects;
         if (watchlist.isEmpty()) {
             WATCHED_HELD.remove(player.getUUID());
             return;
         }
-        Set<String> held = collectWatched(player, watchlist);
-        Set<String> previous = WATCHED_HELD.getOrDefault(player.getUUID(), Set.of());
-        for (String itemId : held) {
-            if (!previous.contains(itemId)) {
-                flagObtained(player, itemId);
+        Set<Item> held = collectWatched(player, watchlist);
+        Set<Item> previous = WATCHED_HELD.getOrDefault(player.getUUID(), Set.of());
+        for (Item item : held) {
+            if (!previous.contains(item)) {
+                flagObtained(player, item);
             }
         }
         if (held.isEmpty()) {
@@ -206,30 +245,32 @@ public class BlockAuditHandler {
         WATCHED_HELD.remove(event.getEntity().getUUID());
     }
 
-    private static Set<String> collectWatched(ServerPlayer player, Set<String> watchlist) {
-        Set<String> found = new HashSet<>();
+    private static Set<Item> collectWatched(ServerPlayer player, Set<Item> watchlist) {
+        Set<Item> found = new HashSet<>();
         scanContainer(player.getInventory(), watchlist, found);
         scanContainer(player.getEnderChestInventory(), watchlist, found);
         return found;
     }
 
-    private static void scanContainer(Container container, Set<String> watchlist, Set<String> found) {
+    private static void scanContainer(Container container, Set<Item> watchlist, Set<Item> found) {
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
             if (stack.isEmpty()) {
                 continue;
             }
-            ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-            if (id != null && watchlist.contains(id.toString())) {
-                found.add(id.toString());
+            Item item = stack.getItem();
+            if (watchlist.contains(item)) {
+                found.add(item);
             }
         }
     }
 
-    private static void flagObtained(ServerPlayer player, String itemId) {
+    private static void flagObtained(ServerPlayer player, Item item) {
         BlockPos pos = player.blockPosition();
         String dim = dimId(player.level());
         String name = player.getGameProfile().getName();
+        ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+        String itemId = id != null ? id.toString() : "unknown";
         LOGGER.warn("CONTRABAND: {} ({}) is holding {} in {} at [{}, {}, {}]",
                 name, player.getUUID(), itemId, dim, pos.getX(), pos.getY(), pos.getZ());
         BlockAuditStore store = BlockAuditStore.get();
@@ -237,7 +278,6 @@ public class BlockAuditHandler {
             return;
         }
         // Record the item's block form (if any) so /blockaudit lookup can show its id.
-        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemId));
         Block block = Block.byItem(item);
         BlockState newState = block == Blocks.AIR ? null : block.defaultBlockState();
         store.enqueue(new BlockAuditRecord(System.currentTimeMillis(), player.getUUID(),
@@ -262,12 +302,8 @@ public class BlockAuditHandler {
     }
 
     private static boolean isIgnored(BlockState state) {
-        Set<String> ignored = ignoredBlocks;
-        if (ignored.isEmpty()) {
-            return false;
-        }
-        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-        return id != null && ignored.contains(id.toString());
+        ensureConfigObjectsResolved();
+        return ignoredBlockObjects.contains(state.getBlock());
     }
 
     // --- commands ----------------------------------------------------------

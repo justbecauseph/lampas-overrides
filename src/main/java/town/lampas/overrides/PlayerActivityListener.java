@@ -58,9 +58,10 @@ public class PlayerActivityListener {
         }
         long now = System.currentTimeMillis();
         long lastFetch = LAST_FETCH_TIME.getOrDefault(uuid, 0L);
-        // Refresh in background if missing or fetched more than 30 seconds ago
+        // Refresh in background if missing or fetched more than 30 seconds ago.
+        // fetchPlayerFactionAsync() stamps LAST_FETCH_TIME itself, so the throttle window starts
+        // immediately regardless of call site (including the direct on-login call).
         if (now - lastFetch > 30000L) {
-            LAST_FETCH_TIME.put(uuid, now);
             fetchPlayerFactionAsync(uuid);
         }
         return PLAYER_FACTIONS.getOrDefault(uuid, Faction.NONE);
@@ -238,6 +239,7 @@ public class PlayerActivityListener {
 
 
     public static void fetchPlayerFactionAsync(java.util.UUID uuid) {
+        LAST_FETCH_TIME.put(uuid, System.currentTimeMillis());
         String url = getPlayerApiUrl(uuid.toString());
         String apiKey = ModConfig.API_KEY.get();
 
