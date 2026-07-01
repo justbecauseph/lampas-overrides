@@ -33,6 +33,9 @@
     "ClientPacketListenerMixin",
     "JadeObjectNameProviderMixin"
   ],
+  "server": [
+    "ItemElokosaPawMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

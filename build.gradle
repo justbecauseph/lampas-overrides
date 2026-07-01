@@ -66,6 +66,8 @@ dependencies {
     compileOnly "maven.modrinth:starcatcher:2.3.16-NEOFORGE-1.21.1"
     // wd's Selling Bin: compile-only, target of the Aur-coin currency swap + value-ceiling mixin.
     compileOnly "maven.modrinth:wds-selling-bin:nrGOzmNu"
+    // Mowzie's Mobs: compile-only, target of the dedicated-server Elokosa Paw crash fix (ItemElokosaPawMixin).
+    compileOnly "maven.modrinth:mowzies-mobs:1.8.2"
 
     // Embedded SQLite for the local block audit log. Bundled into the mod jar via
     // jarJar so it is present on a dedicated server's classpath at runtime.
