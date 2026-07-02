@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "quark"
+    },
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "farmersdelight"
+    }
+  ],
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lampas_overrides:lampia_cheese_slice"
+    },
+    {
+      "item": "quark:moss_paste"
+    },
+    {
+      "item": "minecraft:seagrass"
+    },
+    {
+      "item": "minecraft:kelp"
+    },
+    {
+      "item": "farmersdelight:milk_bottle"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "lampas_overrides:lampia_antidote"
+  }
+}
