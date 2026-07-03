@@ -59,6 +59,16 @@ public class LampasOverridesMod {
         // Register the /live toggle handler ([LIVE] chat/tab prefix, persisted in player NBT)
         NeoForge.EVENT_BUS.register(new LiveStatusHandler());
 
+        // Buff configured mob types (5x max health + 5x attack damage by default) with permanent
+        // attribute modifiers when they spawn/load.
+        NeoForge.EVENT_BUS.register(new StrongMobsHandler());
+        modEventBus.addListener(StrongMobsHandler::onConfigEvent);
+
+        // "Heal Touch": a player carrying the 'heal_touch' scoreboard tag heals whatever they
+        // damage instead of hurting it (their damage becomes healing).
+        NeoForge.EVENT_BUS.register(new HealTouchHandler());
+        modEventBus.addListener(HealTouchHandler::onConfigEvent);
+
         // Register the Cheesy/Plague contact-detection handler to the global game event bus
         NeoForge.EVENT_BUS.register(new CheesyContactHandler());
 

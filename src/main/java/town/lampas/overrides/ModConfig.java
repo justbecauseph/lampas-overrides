@@ -21,6 +21,16 @@ public class ModConfig {
 
     public static final ModConfigSpec.BooleanValue PLAGUE_MODE;
 
+    public static final ModConfigSpec.BooleanValue STRONG_MOBS_ENABLED;
+    public static final ModConfigSpec.DoubleValue STRONG_MOBS_HEALTH_MULT;
+    public static final ModConfigSpec.DoubleValue STRONG_MOBS_DAMAGE_MULT;
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> STRONG_MOBS_LIST;
+
+    public static final ModConfigSpec.BooleanValue HEAL_TOUCH_ENABLED;
+    public static final ModConfigSpec.ConfigValue<String> HEAL_TOUCH_TAG;
+    public static final ModConfigSpec.DoubleValue HEAL_TOUCH_HEAL_MULT;
+    public static final ModConfigSpec.BooleanValue HEAL_TOUCH_AFFECT_PLAYERS;
+
     public static final ModConfigSpec.IntValue LAMPIA_BASE_GRACE_TICKS;
     public static final ModConfigSpec.IntValue LAMPIA_GRACE_STEP_TICKS;
     public static final ModConfigSpec.IntValue LAMPIA_GRACE_FLOOR_TICKS;
@@ -123,6 +133,47 @@ public class ModConfig {
                 .define("rideCommandExtension", true);
         LADDER_ALLOW_INTERACTIONS = BUILDER.comment("Allows interacting with the world while there's an entity on top of you.")
                 .define("allowInteractions", true);
+        BUILDER.pop();
+
+        BUILDER.push("Strong Mobs Settings");
+        STRONG_MOBS_ENABLED = BUILDER.comment("Master switch for buffing the mob types in strongMobsList with permanent max-health/attack-damage modifiers when they spawn or load.")
+                .define("strongMobsEnabled", true);
+        STRONG_MOBS_HEALTH_MULT = BUILDER.comment("Max-health multiplier applied to listed mobs (5.0 = 5x health). 1.0 disables the health buff. Only affects mobs buffed after this value changes; already-buffed mobs keep the modifier they were given.")
+                .defineInRange("strongMobsHealthMultiplier", 5.0D, 1.0D, 1000.0D);
+        STRONG_MOBS_DAMAGE_MULT = BUILDER.comment("Attack-damage multiplier applied to listed mobs (5.0 = 5x damage). 1.0 disables the damage buff. Mobs without an attack-damage attribute (e.g. Ghast) are unaffected on this axis.")
+                .defineInRange("strongMobsDamageMultiplier", 5.0D, 1.0D, 1000.0D);
+        STRONG_MOBS_LIST = BUILDER.comment("Entity type IDs to buff. Edit freely; changes apply to mobs that spawn/load after a config reload (already-buffed mobs are not retroactively un-buffed).")
+                .defineList("strongMobsList",
+                        () -> java.util.List.of(
+                                "rottencreatures:burned",
+                                "rottencreatures:frostbitten",
+                                "rottencreatures:glacial_hunter",
+                                "rottencreatures:hunter_wolf",
+                                "rottencreatures:swampy",
+                                "rottencreatures:dead_beard",
+                                "rottencreatures:immortal",
+                                "rottencreatures:skeleton_lackey",
+                                "rottencreatures:zombie_lackey",
+                                "hybrid-aquatic:karkinos",
+                                "hybrid-aquatic:karcinogen",
+                                "illagerinvasion:surrendered",
+                                "minecraft:ravager",
+                                "minecraft:vindicator",
+                                "minecraft:evoker",
+                                "minecraft:vex",
+                                "minecraft:ghast"),
+                        object -> object instanceof String);
+        BUILDER.pop();
+
+        BUILDER.push("Heal Touch Settings");
+        HEAL_TOUCH_ENABLED = BUILDER.comment("Master switch for the Heal Touch buff: damage dealt by a player carrying the heal-touch tag is cancelled and turned into healing on the target.")
+                .define("healTouchEnabled", true);
+        HEAL_TOUCH_TAG = BUILDER.comment("Scoreboard tag that grants the buff. Give it with '/tag <player> add heal_touch' and remove with '/tag <player> remove heal_touch'.")
+                .define("healTouchTag", "heal_touch");
+        HEAL_TOUCH_HEAL_MULT = BUILDER.comment("How much the target heals relative to the cancelled damage. 1.0 = the damage becomes healing exactly; 0.0 = the player just can't hurt the target (immune, no heal); 2.0 = over-heal.")
+                .defineInRange("healTouchHealMultiplier", 1.0D, 0.0D, 100.0D);
+        HEAL_TOUCH_AFFECT_PLAYERS = BUILDER.comment("Whether a heal-touch player hitting another PLAYER also heals them. False leaves PvP damage untouched (the buff then only affects non-player targets).")
+                .define("healTouchAffectPlayers", true);
         BUILDER.pop();
 
         BUILDER.push("Block Audit Settings");

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added / Changed
+- feat: buff configured mob types to 5x (max health + attack damage) via permanent attribute modifiers on spawn/load — Rotten Creatures (Burned, Frostbitten, Glacial Hunter, Hunter's Wolf, Swampy, Dead Beard, Immortal, Skeleton/Zombie Lackey), Hybrid Aquatic (Karkinos, Karcinogen), Illager Invasion Surrendered, and vanilla Ravager/Vindicator/Evoker/Vex/Ghast. Configurable list + multipliers under "Strong Mobs Settings".
+- feat: "Heal Touch" player buff — a player tagged `heal_touch` (`/tag <player> add heal_touch`) heals whatever they damage instead of hurting it. Cancels the damage on `LivingIncomingDamageEvent` and heals the target by the dealt amount. Configurable under "Heal Touch Settings".
+
 ## [v1.0.88] - 2026-07-01
 
 ### Added / Changed
