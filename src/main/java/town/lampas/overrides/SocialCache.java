@@ -70,6 +70,7 @@ public final class SocialCache {
 
         String url = ModConfig.SOCIALS_API_URL.get();
         if (url == null || url.isEmpty()) return;
+        if (HttpUtil.skipHttpCall("socials fetch")) return;
         String apiKey = ModConfig.API_KEY.get();
 
         long now = System.currentTimeMillis();

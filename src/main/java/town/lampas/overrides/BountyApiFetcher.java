@@ -114,6 +114,12 @@ public class BountyApiFetcher {
             return;
         }
 
+        // Offline mode: serve the last cached bounties instead of hitting the portal.
+        if (HttpUtil.skipHttpCall("bounties fetch")) {
+            if (receiver != null) receiver.accept(cachedBounties);
+            return;
+        }
+
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -201,6 +207,11 @@ public class BountyApiFetcher {
 
         if (url == null || url.isEmpty()) {
             onFailure.accept("Bounty API is not configured.");
+            return;
+        }
+
+        if (HttpUtil.skipHttpCall("bounty claim " + bountyId)) {
+            onFailure.accept("Bounties are unavailable right now (server is in offline mode).");
             return;
         }
 

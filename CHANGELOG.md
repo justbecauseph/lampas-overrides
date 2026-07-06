@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added / Changed
+- feat: offline mode — `offlineMode` config flag (+ `/offlinemode [on|off|toggle]` admin command) short-circuits **every** outbound HTTP call the mod makes, so it runs fully self-contained (offline / singleplayer / networkless) with no request timeouts blocking async threads and no error-log spam. Covers the player-event webhook, bank-sync, faction/role lookup, bounties board (fetch falls back to cached, claim reports unavailable), death notifications, chat social icons, PronounDB pronoun lookups, and the Discord chat relay (messages dropped). Factions fall back to cached/NONE; pronouns/social icons simply don't show.
 - feat: buff configured mob types to 5x (max health + attack damage) via permanent attribute modifiers on spawn/load — Rotten Creatures (Burned, Frostbitten, Glacial Hunter, Hunter's Wolf, Swampy, Dead Beard, Immortal, Skeleton/Zombie Lackey), Hybrid Aquatic (Karkinos, Karcinogen), Illager Invasion Surrendered, and vanilla Ravager/Vindicator/Evoker/Vex/Ghast. Configurable list + multipliers under "Strong Mobs Settings".
 - feat: "Heal Touch" player buff — a player tagged `heal_touch` (`/tag <player> add heal_touch`) heals whatever they damage instead of hurting it. Cancels the damage on `LivingIncomingDamageEvent` and heals the target by the dealt amount. Configurable under "Heal Touch Settings".
 

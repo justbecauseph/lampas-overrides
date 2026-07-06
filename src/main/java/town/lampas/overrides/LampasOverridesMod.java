@@ -75,6 +75,9 @@ public class LampasOverridesMod {
         // Register the /plaguemode admin toggle command
         NeoForge.EVENT_BUS.register(new PlagueModeCommand());
 
+        // Register the /offlinemode admin toggle command (skips portal HTTP calls when the portal is down)
+        NeoForge.EVENT_BUS.register(new OfflineModeCommand());
+
         // Register the Lampia cheese addiction/withdrawal handler
         NeoForge.EVENT_BUS.register(new LampiaAddictionHandler());
 

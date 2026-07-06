@@ -160,6 +160,10 @@ public final class DiscordChatRelay {
     }
 
     private void enqueue(RelayMessage msg) {
+        // Offline mode: drop relayed messages outright instead of queuing sends that can't go out.
+        if (HttpUtil.skipHttpCall("discord relay")) {
+            return;
+        }
         String content = sanitizeContent(msg.content());
         if (content.isEmpty()) {
             return;

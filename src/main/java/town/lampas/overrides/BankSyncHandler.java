@@ -55,6 +55,13 @@ public class BankSyncHandler {
             return;
         }
 
+        // Offline mode: don't push the balance now — the portal is unreachable and a failed send would
+        // just block a pooled thread. The balance is re-synced on the next deposit/withdrawal (or via a
+        // manual push) once the portal is back.
+        if (HttpUtil.skipHttpCall("bank " + eventType + " sync for " + username)) {
+            return;
+        }
+
         // Using Gson to build the JSON object safely.
         com.google.gson.JsonObject jsonObject = new com.google.gson.JsonObject();
         jsonObject.addProperty("uuid", uuid);

@@ -63,6 +63,8 @@ public final class PronounCache {
 
         String url = ModConfig.PRONOUNDB_API_URL.get();
         if (url == null || url.isEmpty()) return;
+        // Offline mode: no PronounDB lookup; names just show without a pronoun tag.
+        if (HttpUtil.skipHttpCall("pronoun fetch")) return;
 
         long now = System.currentTimeMillis();
         if (now - LAST_FETCH.getOrDefault(uuid, 0L) <= TTL_MS) return;

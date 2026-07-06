@@ -114,6 +114,10 @@ public class PlayerActivityListener {
             return;
         }
 
+        if (HttpUtil.skipHttpCall("player " + eventType + " webhook")) {
+            return;
+        }
+
         com.google.gson.JsonObject jsonObject = new com.google.gson.JsonObject();
         jsonObject.addProperty("uuid", uuid);
         jsonObject.addProperty("username", username);
@@ -248,6 +252,12 @@ public class PlayerActivityListener {
             return;
         }
 
+        // Offline mode: leave the faction cache untouched (players resolve to NONE until the portal
+        // is back and the next TTL refresh succeeds).
+        if (HttpUtil.skipHttpCall("faction fetch for " + uuid)) {
+            return;
+        }
+
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -356,6 +366,10 @@ public class PlayerActivityListener {
 
         if (url == null || url.isBlank()) {
             LOGGER.warn("Player death API URL is not configured. Skipping death notification.");
+            return;
+        }
+
+        if (HttpUtil.skipHttpCall("death notification for " + username)) {
             return;
         }
 

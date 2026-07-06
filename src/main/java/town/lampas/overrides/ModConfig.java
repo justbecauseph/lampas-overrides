@@ -6,6 +6,8 @@ public class ModConfig {
     public static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final ModConfigSpec SPEC;
 
+    public static final ModConfigSpec.BooleanValue OFFLINE_MODE;
+
     public static final ModConfigSpec.ConfigValue<String> WEBHOOK_URL;
     public static final ModConfigSpec.ConfigValue<String> API_KEY;
 
@@ -77,6 +79,16 @@ public class ModConfig {
 
     static {
         BUILDER.push("General Settings");
+        OFFLINE_MODE = BUILDER.comment(
+                "Offline mode: when true, EVERY outbound HTTP call the mod makes is skipped so it runs fully",
+                "self-contained — offline, singleplayer, or on a networkless box — with no request timeouts",
+                "blocking async threads and no error-log spam. Affected: player-event webhook, bank-sync,",
+                "faction/role lookup, bounties board (fetch + claim), death notifications, chat social icons,",
+                "PronounDB pronoun lookups, and the Discord chat relay. Factions fall back to whatever is cached",
+                "(NONE for players who never resolved); pronouns/social icons simply don't show; Discord relay",
+                "messages are dropped. Toggle live with /offlinemode; editing this value directly takes effect",
+                "on the next config reload.")
+                .define("offlineMode", false);
         WEBHOOK_URL = BUILDER.comment("The full URL of the webhook endpoint to notify when player events occur.")
                 .define("webhookUrl", "http://localhost:3000/api/minecraft/sync-balance");
         API_KEY = BUILDER.comment("API key to be sent in the 'x-api-key' header for authorization.")
